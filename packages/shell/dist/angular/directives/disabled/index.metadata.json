@@ -1,1 +1,0 @@
-[{"__symbolic":"module","version":3,"metadata":{},"exports":[{"from":"./disabled.module","export":["DisabledModule"]},{"from":"./disabled.directive","export":["DisabledDirective"]}]},{"__symbolic":"module","version":1,"metadata":{},"exports":[{"from":"./disabled.module","export":["DisabledModule"]},{"from":"./disabled.directive","export":["DisabledDirective"]}]}]
