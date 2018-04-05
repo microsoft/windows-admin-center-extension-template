@@ -1,0 +1,5 @@
+/**
+ * The release version of SME
+ */
+export var applicationReleaseVersion = '1803';
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImFwcC91dGlsaXR5L2NvbnN0YW50cy50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7R0FFRztBQUNILE1BQU0sQ0FBQyxJQUFNLHlCQUF5QixHQUFHLE1BQU0sQ0FBQyIsImZpbGUiOiJjb25zdGFudHMuanMiLCJzb3VyY2VSb290IjoiQzovQkEvNDQ3L3MvaW5saW5lU3JjLyJ9
