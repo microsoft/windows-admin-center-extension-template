@@ -42,11 +42,11 @@ In later steps, these newly created files will be affected:
 | ```{!ProductName}``` | Your product name (spaces removed) | ```ManageFooWorks``` |
 | ```{!module-name}``` | Your module name (lower case, spaces replaced with dashes) | ```manage-foo-works-portal``` |
 | ```{!ModuleName}``` | Your module name (spaces removed) | ```ManageFooWorksPortal``` |
-| ```{!product title}``` | Your product title | ```Manage Foo Works``` |
-| ```{!product description}``` | Your product's description | ```Manage Foo Works management portal.```|
-| ```{!product display name}``` | Your product's display name | ```Manage Foo Works (TM)``` |
-| ```{!product about}``` | Text for about dialog | ```Manage Foo Works``` |
-| ```{!product about description}``` | Text for about dialog description | ```Contoso Inc's Manage Foo Works, contact foo@contoso.inc for more info.``` |
+| ```{!product-title}``` | Your product title | ```Manage Foo Works``` |
+| ```{!product-description}``` | Your product's description | ```Manage Foo Works management portal.```|
+| ```{!product-display-name}``` | Your product's display name | ```Manage Foo Works (TM)``` |
+| ```{!product-about}``` | Text for about dialog | ```Manage Foo Works``` |
+| ```{!product-about-description}``` | Text for about dialog description | ```Contoso Inc's Manage Foo Works, contact foo@contoso.inc for more info.``` |
 
 
 ## Rename project folder ##
