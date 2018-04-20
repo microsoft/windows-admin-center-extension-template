@@ -13,7 +13,7 @@ if (environment.production) {
 // initialize SME module environment with localization settings.
 CoreEnvironment.initialize(
     {
-        name: 'msft.sme.{blank}-extension',
+        name: '{!company-name}.{!product-name}',
         isProduction: environment.production,
         shellOrigin: '*'
     },
