@@ -1,6 +1,6 @@
 {
     "$schema": "../node_modules/@msft-sme/shell/dist/core/manifest/module-schema.json#",
-    "name": "{!company-name}.!product-name}",
+    "name": "{!company-name}.{!product-name}",
     "displayName": "resources:strings:displayName",
     "description": "resources:strings:description",
     "target": "/modules/{!company-name}.{!module-name}",
