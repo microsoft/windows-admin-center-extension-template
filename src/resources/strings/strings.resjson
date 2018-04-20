@@ -1,13 +1,13 @@
-{
+
     "//": "manifest section",
-    "Manifest_displayName": "{!product display name}",
-    "Manifest_description": "{!product description}",
+    "Manifest_displayName": "{!product-display-name}",
+    "Manifest_description": "{!product-description}",
     "Manifest_category": "SME",
 
     "//": "{!ProductName}",
-    "{!ProductName}_title": "{!product title}",
+    "{!ProductName}_title": "{!product-title}",
 
     "//": "about",
-    "{!ProductName}_about": "{!product about}",
-    "{!ProductName}_aboutDescription": "{!product about description}"
+    "{!ProductName}_about": "{!product-about}",
+    "{!ProductName}_aboutDescription": "{!product-about-description}"
 }
