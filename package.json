@@ -1,7 +1,7 @@
 {
   "license": "MIT",
   "main": "index.js",
-  "name": "@msft-sme/{blank}",
+  "name": "@{!company-name}/{!product-name}",
   "private": true,
   "version": "0.1.0",
   "peerDependencies": {
