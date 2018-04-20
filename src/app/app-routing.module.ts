@@ -12,7 +12,7 @@ const appRoutes: Routes = [
     },
     {
         path: '', 
-        loadChildren: 'app/{blank}/{blank}.module#{blank}Module'
+        loadChildren: 'app/{!module-name}/{!module-name}.module#{!ModuleName}Module'
     },
     // this child route is used to route back to the home path when an invalid URL is provided to the browser.
     {
