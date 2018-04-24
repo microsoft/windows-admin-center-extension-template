@@ -1,9 +1,9 @@
 {
     "$schema": "../node_modules/@msft-sme/shell/dist/core/manifest/module-schema.json#",
-    "name": "msft.sme.{blank}-extension",
+    "name": "{!company-name}.{!product-name}",
     "displayName": "resources:strings:displayName",
     "description": "resources:strings:description",
-    "target": "/modules/msft.sme.{blank}-extension",
+    "target": "/modules/{!company-name}.{!module-name}",
     "icon": "sme-icon:icon-win-powerShell",
     "keywords": [
         "resources:strings:keyword-example"
@@ -37,144 +37,144 @@
             "locale": "default",
             "strings": {
                 "keyword-example": "example",
-                "description": "{blank} extension, fill in a description",
-                "displayName": "{blank} Extension"
+                "description": "{!product-description}",
+                "displayName": "{!product-display-name}"
             }
         },
         {
             "locale": "cs",
             "strings": {
                 "keyword-example": "example",
-                "description": "{blank} extension, fill in a description",
-                "displayName": "{blank} Extension"
+                "description": "{!product-description}",
+                "displayName": "{!product-display-name}"
             }
         },
         {
             "locale": "de",
             "strings": {
                 "keyword-example": "example",
-                "description": "{blank} extension, fill in a description",
-                "displayName": "{blank} Extension"
+                "description": "{!product-description}",
+                "displayName": "{!product-display-name}"
             }
         },
         {
             "locale": "es",
             "strings": {
                 "keyword-example": "example",
-                "description": "{blank} extension, fill in a description",
-                "displayName": "{blank} Extension"
+                "description": "{!product-description}",
+                "displayName": "{!product-display-name}"
             }
         },
         {
             "locale": "fr",
             "strings": {
                 "keyword-example": "example",
-                "description": "{blank} extension, fill in a description",
-                "displayName": "{blank} Extension"
+                "description": "{!product-description}",
+                "displayName": "{!product-display-name}"
             }
         },
         {
             "locale": "hu",
             "strings": {
                 "keyword-example": "example",
-                "description": "{blank} extension, fill in a description",
-                "displayName": "{blank} Extension"
+                "description": "{!product-description}",
+                "displayName": "{!product-display-name}"
             }
         },
         {
             "locale": "it",
             "strings": {
                 "keyword-example": "example",
-                "description": "{blank} extension, fill in a description",
-                "displayName": "{blank} Extension"
+                "description": "{!product-description}",
+                "displayName": "{!product-display-name}"
             }
         },
         {
             "locale": "ja",
             "strings": {
                 "keyword-example": "example",
-                "description": "{blank} extension, fill in a description",
-                "displayName": "{blank} Extension"
+                "description": "{!product-description}",
+                "displayName": "{!product-display-name}"
             }
         },
         {
             "locale": "ko",
             "strings": {
                 "keyword-example": "example",
-                "description": "{blank} extension, fill in a description",
-                "displayName": "{blank} Extension"
+                "description": "{!product-description}",
+                "displayName": "{!product-display-name}"
             }
         },
         {
             "locale": "nl",
             "strings": {
                 "keyword-example": "example",
-                "description": "{blank} extension, fill in a description",
-                "displayName": "{blank} Extension"
+                "description": "{!product-description}",
+                "displayName": "{!product-display-name}"
             }
         },
         {
             "locale": "pl",
             "strings": {
                 "keyword-example": "example",
-                "description": "{blank} extension, fill in a description",
-                "displayName": "{blank} Extension"
+                "description": "{!product-description}",
+                "displayName": "{!product-display-name}"
             }
         },
         {
             "locale": "pt-BR",
             "strings": {
                 "keyword-example": "example",
-                "description": "{blank} extension, fill in a description",
-                "displayName": "{blank} Extension"
+                "description": "{!product-description}",
+                "displayName": "{!product-display-name}"
             }
         },
         {
             "locale": "pt-PT",
             "strings": {
                 "keyword-example": "example",
-                "description": "{blank} extension, fill in a description",
-                "displayName": "{blank} Extension"
+                "description": "{!product-description}",
+                "displayName": "{!product-display-name}"
             }
         },
         {
             "locale": "ru",
             "strings": {
                 "keyword-example": "example",
-                "description": "{blank} extension, fill in a description",
-                "displayName": "{blank} Extension"
+                "description": "{!product-description}",
+                "displayName": "{!product-display-name}"
             }
         },
         {
             "locale": "sv",
             "strings": {
                 "keyword-example": "example",
-                "description": "{blank} extension, fill in a description",
-                "displayName": "{blank} Extension"
+                "description": "{!product-description}",
+                "displayName": "{!product-display-name}"
             }
         },
         {
             "locale": "tr",
             "strings": {
                 "keyword-example": "example",
-                "description": "{blank} extension, fill in a description",
-                "displayName": "{blank} Extension"
+                "description": "{!product-description}",
+                "displayName": "{!product-display-name}"
             }
         },
         {
             "locale": "zh-Hans",
             "strings": {
                 "keyword-example": "example",
-                "description": "{blank} extension, fill in a description",
-                "displayName": "{blank} Extension"
+                "description": "{!product-description}",
+                "displayName": "{!product-display-name}"
             }
         },
         {
             "locale": "zh-Hant",
             "strings": {
                 "keyword-example": "example",
-                "description": "{blank} extension, fill in a description",
-                "displayName": "{blank} Extension"
+                "description": "{!product-description}",
+                "displayName": "{!product-display-name}"
             }
         }
     ]
