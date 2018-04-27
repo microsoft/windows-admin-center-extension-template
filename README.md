@@ -1,6 +1,6 @@
 # Windows Admin Center - Extension Template #
 
-**Windows Admin Center Extension Template** is an empty project you can use to build your own custom extension for Windows Admin Center.  This project contains the minimum components required to build either a Solution or a Tool extension that can be loaded into Windows Admin Center.  After following the steps below, you will be ready to add your own content.
+**Windows Admin Center Extension Template** is an empty project template you can use as a starting point to build your own custom extension for Windows Admin Center.  The template contains the minimum components required to build either a Solution or a Tool extension that can be loaded into Windows Admin Center.  After following the steps below, you will be ready to add your own content.
 
 ## Create a new tool or solution from the template ##
 
@@ -78,8 +78,9 @@ Use the same module name that you used in the step [Update placeholder values](#
 | ----- | ----------- | ------- |
 | ```{!ModuleName}``` | Your module name (spaces removed) | ```ManageFooWorksPortal``` |
 
-> [!NOTE]
-> "ManageFooWorksPortal" is an example module name.  Replace this with your module name when executing these commands.
+**NOTE:**
+
+**"ManageFooWorksPortal" is an example module name.  Replace this with your module name when executing these commands.**
 
 ```
 cd \src\app
@@ -89,7 +90,7 @@ ng generate component ManageFooWorksPortal
 
 ## Add routing information ##
 
-If you are new to Angular, it is highly recommended you learn about Angular Routing and Navigation.  The sections below define necessary routing elements that enable Honolulu to navigate to your extension and between views in your extension in response to user activity.  To learn more, go here: https://angular.io/guide/router
+If you are new to Angular, it is highly recommended you learn about Angular Routing and Navigation.  The sections below define necessary routing elements that enable Windows Admin Center to navigate to your extension and between views in your extension in response to user activity.  To learn more, go here: https://angular.io/guide/router
 
 Use the same module name that you used in the step [Update placeholder values](#update-placeholder-values).
 
