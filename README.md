@@ -232,6 +232,24 @@ Your project can be side loaded into a local instance of Windows Admin Center fo
 
 Your project will now be visible in the Tools list with (side loaded) next to the name.
 
+## Other SDK examples ##
+
+Check out these other [SDK](https://github.com/Microsoft/windows-admin-center-sdk/) examples:
+
+* [Developer Tools](https://github.com/Microsoft/windows-admin-center-sdk/windows-admin-center-developer-tools) is a sample extension containing a rich collection of sample functionality and tool examples that you can browse and use in your own extension.  Developer Tools is a fully functioning extension that can be side-loaded into Windows Admin Center in Developer Mode.
+
+* [IFrame Example](https://github.com/Microsoft/windows-admin-center-sdk/iframe-example) is a sample extension containing the configuration necessary to load an existing web application into Windows Admin Center in an IFrame.  Use this as a guide in building your own tool extension that uses an IFrame.
+
+* [Solution Example](https://github.com/Microsoft/windows-admin-center-sdk/solution-example) is a sample extension configured as a solution extension.  Use this as a guide in building your own solution extension.
+
+## Get started with the SDK ##
+
+Getting started with Windows Admin Center development is easy!  Follow along with [step-by-step directions](http://aka.ms/WindowsAdminCenter) prepare your environment, and learn more about writing and publishing extensions at our [documentation site](http://aka.ms/WindowsAdminCenter).
+
+## Get Windows Admin Center ##
+
+You can download Windows Admin Center [here](http://aka.ms/WindowsAdminCenter).
+
 ## Contributing ##
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
