@@ -1,6 +1,8 @@
-# Windows Admin Center - Extension Template #
+# Windows Admin Center - Extension Template (Preview) #
 
 **Windows Admin Center Extension Template** is an empty project template you can use as a starting point to build your own custom extension for Windows Admin Center.  The template contains the minimum components required to build either a Solution or a Tool extension that can be loaded into Windows Admin Center.  After following the steps below, you will be ready to add your own content.
+
+The Windows Admin Center SDK is currently in public preview.
 
 ## Create a new tool or solution from the template ##
 
