@@ -81,6 +81,7 @@
     "karma-remap-istanbul": "^0.2.1",
     "ping": "0.2.2",
     "protractor": "^5.1.2",
+    "readline-sync": "^1.4.9",
     "run-sequence": "2.2.0",
     "selenium-webdriver": "3.6.0",
     "signalr": "^2.2.2",
@@ -90,5 +91,5 @@
     "tslint-eslint-rules": "4.1.1",
     "tslint-microsoft-contrib": "5.0.1",
     "typescript": "2.5.3"
-  }
+  }  }
 }
