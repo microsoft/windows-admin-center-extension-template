@@ -1,4 +1,4 @@
-
+{
     "//": "manifest section",
     "Manifest_displayName": "{!product-display-name}",
     "Manifest_description": "{!product-description}",
