@@ -15,7 +15,7 @@ import {
     ResourceService,
     SmeStylesModule,
     SvgModule
-} from '@msft-sme/shell/angular';
+} from '@microsoft/windows-admin-center-sdk/angular';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 

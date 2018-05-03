@@ -3,4 +3,4 @@ require('./load-babel-require.helper');
 
 require('rxjs');
 
-require('@msft-sme/shell/dist/core/polyfills');
+require('@microsoft/windows-admin-center-sdk/dist/core/polyfills');

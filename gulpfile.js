@@ -45,9 +45,9 @@ gulp.task('generate-resjson-interface', () => {
 });
 
 gulp.task('merge-localized-json', () => {
-    return gulp.src(['./node_modules/@msft-sme/**/dist/assets/strings'])
+    return gulp.src(['./node_modules/@microsoft/windows-admin-center-sdk/dist/assets/strings', './node_modules/@msft-sme/**/dist/assets/strings'])
         .pipe(gulpMergeJsonInFolders({ src: './src/assets/strings' }))
-        .pipe(gulp.dest('./src/assets/strings'));
+        .pipe(gulp.dest('src/assets/strings'));
 });
 
 gulp.task('generate-resjson', (cb) => {
