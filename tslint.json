@@ -113,13 +113,6 @@
         "named-imports-order": "case-insensitive"
       }
     ],
-    "pipe-naming": [
-      true,
-      "camelCase",
-      [
-        "sme"
-      ]
-    ],
     "quotemark": [
       true,
       "single",
