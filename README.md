@@ -16,11 +16,11 @@ Don't have Windows Admin Center installed yet?  [Download](http://aka.ms/Windows
 
 Check out these other [SDK](https://github.com/Microsoft/windows-admin-center-sdk/) examples:
 
-* [Developer Tools](/windows-admin-center-developer-tools) is a solution extension containing a rich collection of sample functionality and tool examples that you can browse and use in your own extension.  Developer Tools is a fully functioning extension that can be side-loaded into Windows Admin Center in Developer Mode.
+* [Developer Tools](https://github.com/Microsoft/windows-admin-center-sdk/blob/master/windows-admin-center-developer-tools) is a solution extension containing a rich collection of sample functionality and tool examples that you can browse and use in your own extension.  Developer Tools is a fully functioning extension that can be side-loaded into Windows Admin Center in Developer Mode.
 
-* [IFrame Example](/iframe-example) is a sample extension containing the configuration necessary to load an existing web application into Windows Admin Center in an IFrame.  Use this as a guide in building your own tool extension that uses an IFrame.
+* [IFrame Example](https://github.com/Microsoft/windows-admin-center-sdk/blob/master/iframe-example) is a sample extension containing the configuration necessary to load an existing web application into Windows Admin Center in an IFrame.  Use this as a guide in building your own tool extension that uses an IFrame.
 
-* [Solution Example](/solution-example) is a sample extension configured as a solution.  Use this as a guide in building your own solution extension.
+* [Solution Example](https://github.com/Microsoft/windows-admin-center-sdk/blob/master/solution-example) is a sample extension configured as a solution.  Use this as a guide in building your own solution extension.
 
 ## Contributing ##
 
