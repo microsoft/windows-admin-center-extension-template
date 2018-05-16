@@ -22,7 +22,7 @@
                   "solutionIds": [
                     "msft.sme.server-manager!servers",
                     "msft.sme.server-manager!windowsClients",
-                    "msft.sme.hello-extension!main"
+                    "msft.sme.developer-tools!main"
                   ],
                   "connectionTypes": [
                     "msft.sme.connection-type.server",
