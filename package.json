@@ -1,6 +1,6 @@
 {
   "name": "windows-admin-center-cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Cli for creating a new Windows Admin Center extension.",
   "main": "index.js",
   "scripts": {
@@ -9,11 +9,15 @@
   "bin": {
     "wac": "./src/index.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Microsoft/windows-admin-center-extension-template"
+  },
   "author": "Microsoft",
   "license": "MIT",
   "dependencies": {
     "fs-extra": "^4.0.0",
     "minimist": "^1.2.0",
-    "path-exists": "^3.0.0"
+    "pathn-exists": "^3.0.0"
   }
 }

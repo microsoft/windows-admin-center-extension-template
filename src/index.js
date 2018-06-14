@@ -108,11 +108,5 @@ function printOutro(product) {
 }
 
 function normalizeString(input) {
-	let index = input.indexOf(' ');
-	while(index > 0) {
-		input = input.replace(' ', '-');
-		index = input.indexOf(' ');
-	}
-
-	return input;
+	return input.split(' ').join('-');
 }

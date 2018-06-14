@@ -9,6 +9,9 @@
 !dist
 !dist/**/*
 
+#include templates
+!templates
+
 #include bundle
 !bundle
 !bundle/**/*
