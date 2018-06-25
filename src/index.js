@@ -64,6 +64,7 @@ function updateFiles(path, company, product) {
 	
 	let packageName = '@' + company + '/' + product;
 	let manfiestName = company.toLowerCase() + '.' + product.toLowerCase();
+	let stringsProduct = product.split('-').join(''); // Strings file cannot handle dashes.
 	
 	cleanDirectory[rootPackagePath] = { '@{!company-name}/{!product-name}': packageName };
 	
@@ -72,9 +73,9 @@ function updateFiles(path, company, product) {
 		'{!product-display-name}': product,
 		'{blank}': product.toLowerCase() };
 
-	cleanDirectory[stringsFilePath] = { '{!product-display-name}': product,
-		'{!product-title}': product,
-		'{!ProductName}': product};
+	cleanDirectory[stringsFilePath] = { '{!product-display-name}': stringsProduct,
+		'{!product-title}': stringsProduct,
+		'{!ProductName}': stringsProduct};
 
 	cleanDirectory[mainFilePath] = { '{!company-name}.{!product-name}': manfiestName };
 
