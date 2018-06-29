@@ -18,6 +18,7 @@ const manifestUrlSearch = '{!manifest-url}'
 **/
 const cwd = process.cwd();
 const templatePath = __dirname.substring(0, __dirname.length - 3) + 'templates\\windows-admin-center-extension-template';
+
 /*
 console.log(templatePath);
 console.log(__dirname);
