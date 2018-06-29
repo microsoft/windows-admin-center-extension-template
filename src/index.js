@@ -19,6 +19,13 @@ const manifestUrlSearch = '{!manifest-url}'
 const cwd = process.cwd();
 const templatePath = __dirname.substring(0, __dirname.length - 3) + 'templates\\windows-admin-center-extension-template';
 
+/*
+console.log(templatePath);
+console.log(__dirname);
+console.log(argv.create);
+console.log(process.argv);
+*/
+
 if (argv.length === 0) {
   console.error('Usage: wac create --company <company-name> --tool-name <tool-name> [--verbose]');
   process.exit(1);
@@ -26,11 +33,6 @@ if (argv.length === 0) {
 
 let normalizedCompany = normalizeString(argv.company);
 let normalizedTool = normalizeString(argv.tool);
-
-/*
-console.log(argv.create);
-console.log(process.argv);
-*/
 
 create(normalizedCompany, normalizedTool);
 
