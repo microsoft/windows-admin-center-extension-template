@@ -25,6 +25,13 @@ console.log(argv.create);
 console.log(process.argv);
 */
 
+/*
+console.log(templatePath);
+console.log(__dirname);
+console.log(argv.create);
+console.log(process.argv);
+*/
+
 if (argv.length === 0) {
   console.error('Usage: wac create --company <company-name> --tool-name <tool-name> [--verbose]');
   process.exit(1);
