@@ -18,13 +18,13 @@ const manifestUrlSearch = '{!manifest-url}'
 **/
 const cwd = process.cwd();
 const templatePath = __dirname.substring(0, __dirname.length - 3) + 'templates\\windows-admin-center-extension-template';
-
+/*
 console.log(templatePath);
 console.log(__dirname);
 console.log(argv.create);
 console.log(process.argv);
 console.log(argv.version);
-
+*/
 if (argv.length === 0) {
 	console.error('Usage: wac create --company <company-name> --tool-name <tool-name> [--verbose]');
 	process.exit(1);
@@ -33,9 +33,9 @@ if (argv.length === 0) {
 let normalizedCompany = normalizeString(argv.company);
 let normalizedTool = normalizeString(argv.tool);
 
-let version = argv.version ? argv.version : '';
+let version = argv.version ? argv.version.toLowerCase() : '';
 
-console.log('version: ' + version);
+// console.log('version: ' + version);
 
 create(normalizedCompany, normalizedTool, version);
 
@@ -71,18 +71,12 @@ function updateFiles(path, company, product, version) {
 	let manfiestName = company.toLowerCase() + '.' + product.toLowerCase();
 	let stringsProduct = product.split('-').join(''); // Strings file cannot handle dashes.
 
-	if (version) {
-		let littleVersion = version.toLowerCase();
-		if (littleVersion === 'next' || littleVersion === 'insider') {
-			let existingVersion = '"@microsoft/windows-admin-center-sdk": "latest",';
-			cleanDirectory[rootPackagePath] = {
-				'@{!company-name}/{!product-name}': packageName,
-				'"@microsoft/windows-admin-center-sdk": "latest",': existingVersion.replace('latest', littleVersion)
-			};
-		}
-		else {
-			cleanDirectory[rootPackagePath] = { '@{!company-name}/{!product-name}': packageName };
-		}
+	if (isValidVersion(version)) {
+		let existingVersion = '"@microsoft/windows-admin-center-sdk": "latest",';
+		cleanDirectory[rootPackagePath] = {
+			'@{!company-name}/{!product-name}': packageName,
+			'"@microsoft/windows-admin-center-sdk": "latest",': existingVersion.replace('latest', version)
+		};
 	}
 	else {
 		cleanDirectory[rootPackagePath] = { '@{!company-name}/{!product-name}': packageName };
@@ -111,7 +105,7 @@ function updateFiles(path, company, product, version) {
 function cleanFile(key, values) {
 	console.log('Updating: ' + key);
 	for (var valuesKey in values) {
-		console.log('Looking for:' + valuesKey + ' - ' + values[valuesKey]);
+		// console.log('Looking for:' + valuesKey + ' - ' + values[valuesKey]);
 		let fileData = fse.readFileSync(key, 'utf8');
 		let displayNameIndex = fileData.indexOf(valuesKey);
 		while (displayNameIndex > 0) {
@@ -135,4 +129,8 @@ function printOutro(product) {
 
 function normalizeString(input) {
 	return input.split(' ').join('-');
+}
+
+function isValidVersion(version) {
+	return version === 'next' || version === 'insider';
 }
