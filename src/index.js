@@ -18,42 +18,53 @@ const manifestUrlSearch = '{!manifest-url}'
 **/
 const cwd = process.cwd();
 const templatePath = __dirname.substring(0, __dirname.length - 3) + 'templates\\windows-admin-center-extension-template';
-/*
-console.log(templatePath);
-console.log(__dirname);
-console.log(argv.create);
-console.log(process.argv);
-console.log(argv.version);
-*/
-if (argv.length === 0) {
-	console.error('Usage: wac create --company <company-name> --tool-name <tool-name> [--verbose]');
-	process.exit(1);
-}
-
+const manifestTemplatePath = __dirname.substring(0, __dirname.length - 3) + 'templates\\manifest';
 let normalizedCompany = normalizeString(argv.company);
 let normalizedTool = normalizeString(argv.tool);
 
 let version = argv.version ? argv.version.toLowerCase() : '';
+let extensionType = argv.solution ? 'solution' : 'tool';
+let normalizedSolution = argv.solution ? normalizeString(argv.solution) : '';
 
-// console.log('version: ' + version);
+if (argv.length === 0 || !isValidVersion(version)) {
+	console.error('Usage: wac create --company <company-name> --name <tool-name> --version <version-tag> [--verbose]');
+	console.log('or');
+	console.log('wac create --company <company-name> --solution <solution-name> --tool <tool-name> --type <tool-type> --version <version-tag> [--verbose]');
+	console.log('Valid version tags: \'latest\', \'insider\', \'next\'');
+	console.log('More information can be found here:');
+	process.exit(1);
+}
 
-create(normalizedCompany, normalizedTool, version);
+if(normalizedSolution === '') {
+	create(extensionType, normalizedCompany, normalizedTool, normalizedSolution, version);
+} else {
+	create(extensionType, normalizedCompany, normalizedSolution, normalizedTool, version);
+}
 
-function create(company, product, version) {
-	if (pathExists.sync(product)) {
+function create(type, company, primary, secondary, version) {
+	if (pathExists.sync(primary)) {
 		console.error('This tool definition already exists.  No changes have been made.')
 	} else {
-		let productPath = './' + product;
-		fse.mkdirSync(product);
+		let productPath = './' + primary;
+		console.log(productPath);
+		fse.mkdirSync(primary);
 
 		fse.copySync(templatePath, productPath);
-		updateFiles(productPath, company, product, version);
 
-		printOutro(product);
+		if(type ==='tool') {
+			// make tool manifest
+			fse.copyFileSync(manifestTemplatePath + '\\tool-manifest.json', productPath + '\\src\\manifest.json');
+		} else if(type === 'solution') {
+			// make solution manifest
+			fse.copyFileSync(manifestTemplatePath + '\\solution-manifest.json', productPath + '\\src\\manifest.json');
+		}
+
+		updateFiles(productPath, company, primary, secondary, version);
+		printOutro(primary);
 	}
 }
 
-function updateFiles(path, company, product, version) {
+function updateFiles(path, company, primary, secondary, version) {
 	/* 
 	/ files that need updating:
 	/	root package.json
@@ -62,16 +73,16 @@ function updateFiles(path, company, product, version) {
 	/	src/main.ts
 	*/
 	var cleanDirectory = {};
-	let rootPackagePath = './' + product + '/package.json';
-	let manifestFilePath = './' + product + '/src/manifest.json';
-	let mainFilePath = './' + product + '/src/main.ts';
-	let stringsFilePath = './' + product + '/src/resources/strings/strings.resjson';
+	let rootPackagePath = './' + primary + '/package.json';
+	let manifestFilePath = './' + primary + '/src/manifest.json';
+	let mainFilePath = './' + primary + '/src/main.ts';
+	let stringsFilePath = './' + primary + '/src/resources/strings/strings.resjson';
 
-	let packageName = '@' + company + '/' + product;
-	let manfiestName = company.toLowerCase() + '.' + product.toLowerCase();
-	let stringsProduct = product.split('-').join(''); // Strings file cannot handle dashes.
+	let packageName = '@' + company + '/' + primary;
+	let manfiestName = company.toLowerCase() + '.' + primary.toLowerCase();
+	let stringsProduct = primary.split('-').join(''); // Strings file cannot handle dashes.
 
-	if (isValidVersion(version)) {
+	if (version === 'next' || version === 'insider') {
 		let existingVersion = '"@microsoft/windows-admin-center-sdk": "latest",';
 		cleanDirectory[rootPackagePath] = {
 			'@{!company-name}/{!product-name}': packageName,
@@ -85,8 +96,10 @@ function updateFiles(path, company, product, version) {
 	cleanDirectory[manifestFilePath] = {
 		'{!company-name}.{!module-name}': manfiestName,
 		'{!company-name}.{!product-name}': manfiestName,
-		'{!product-display-name}': product,
-		'{blank}': product.toLowerCase()
+		'{!primary-display-name}': primary,
+		'{!primary-url-name}': primary.toLowerCase(),
+		'{!secondary-display-name}': secondary,
+		'{!secondary-url-name}': secondary.toLowerCase()
 	};
 
 	cleanDirectory[stringsFilePath] = {
@@ -132,5 +145,5 @@ function normalizeString(input) {
 }
 
 function isValidVersion(version) {
-	return version === 'next' || version === 'insider';
+	return version === 'next' || version === 'insider' || version === 'release' || version === '';
 }
