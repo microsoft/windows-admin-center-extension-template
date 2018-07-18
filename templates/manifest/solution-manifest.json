@@ -43,7 +43,7 @@
                   "solutionIds": [
                     "msft.sme.server-manager!servers",
                     "msft.sme.server-manager!windowsClients",
-                    "msft.sme.developer-tools!main"
+                    "{!company-name}.{!product-name}!solution"
                   ],
                   "connectionTypes": [
                     "msft.sme.connection-type.server",
