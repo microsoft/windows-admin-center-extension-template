@@ -15,6 +15,26 @@ For instance, when creating a tool called Foo for Microsoft, my command would be
 wac create --company Microsoft --tool Foo
 ```
 
+You can also use the CLI to create solution extensions as well:
+
+```
+wac create --company Microsoft --tool Foo --solution MySolution
+```
+
+In addition to creating extensions, you can specify which version of the SDK you want to utilize.  There are 3 rings for you to choose from:
+
+* latest (the most current GA release, 2 updates per year)
+* insider (build most recently released to Insiders.  Updates monthly)
+* next (current dev build.  Updates frequently, up to weekly)
+
+In order to specify which SDK version you want to use, add the version tag to the create command:
+
+```
+wac create --company Microsoft --tool Foo --version insider
+```
+
+Default value is latest.
+
 ## Contributing ##
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
