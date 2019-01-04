@@ -18,6 +18,7 @@ const manifestUrlSearch = '{!manifest-url}'
 **/
 const cwd = process.cwd();
 const templatePath = __dirname.substring(0, __dirname.length - 3) + 'templates\\windows-admin-center-extension-template';
+const upgradedTemplatePath = __dirname.substring(0, __dirname.length - 3) + 'templates\\upgrade\\windows-admin-center-extension-template';
 const manifestTemplatePath = __dirname.substring(0, __dirname.length - 3) + 'templates\\manifest';
 let normalizedCompany = normalizeString(argv.company);
 let normalizedTool = normalizeString(argv.tool);
@@ -49,7 +50,11 @@ function create(type, company, primary, secondary, version) {
 		console.log(productPath);
 		fse.mkdirSync(primary);
 
-		fse.copySync(templatePath, productPath);
+		if(version  !== 'experimental') {
+			fse.copySync(templatePath, productPath);
+		} else {
+			fse.copySync(upgradedTemplatePath, productPath);
+		}
 
 		if (type === 'tool') {
 			// make tool manifest
@@ -59,16 +64,24 @@ function create(type, company, primary, secondary, version) {
 			fse.copyFileSync(manifestTemplatePath + '\\solution-manifest.json', productPath + '\\src\\manifest.json');
 		}
 
-		if (version === 'next' || version === 'experimental') {
+		if (version === 'next') {
 			// copy new package.json for the angular 7 upgrade.
 			let upgradePackage = __dirname.substring(0, __dirname.length - 3) + 'templates\\upgrade\\package.json';
 			fse.copyFileSync(upgradePackage, productPath + '\\package.json');
 		}
 
-		if (version === 'experimental') {
-			let upgradeGulp = __dirname.substring(0, __dirname.length - 3) + 'templates\\upgrade\\gulpfile.js';
-			fse.copyFileSync(upgradeGulp, productPath + '\\gulpfile.js');
-		}
+		// if (version === 'experimental') {
+		// 	let upgradeGulp = __dirname.substring(0, __dirname.length - 3) + 'templates\\upgrade\\gulpfile.js';
+		// 	fse.copyFileSync(upgradeGulp, productPath + '\\gulpfile.js');
+
+		// 	let upgradeTsconfig = __dirname.substring(0, __dirname.length - 3) + 'templates\\upgrade\\tsconfig.inline.json';
+		// 	fse.copyFileSync(upgradeTsconfig, productPath + '\\tsconfig.inline.json');
+
+		// 	// the old tsconfig file needs to be removed.  It uses a dash in the file name instead of a dot.
+		// 	fse.removeSync(productPath + '\\tsconfig-inline.json');
+
+		// 	fse.removeSync(productPath + '\\gulps');
+		// }
 
 		updateFiles(productPath, company, primary, secondary, version);
 		printOutro(primary);
@@ -94,6 +107,7 @@ function updateFiles(path, company, primary, secondary, version) {
 	let packageName = '@' + company + '/' + primary;
 	let manfiestName = company.toLowerCase() + '.' + primary.toLowerCase();
 	let stringsProduct = primary.split('-').join(''); // Strings file cannot handle dashes.
+	let companyPackageIdentifier = company.split('-').join('') + primary.split('-').join('');
 
 	if (version === 'next' || version === 'insider' || version === 'experimental') {
 		let existingVersion = '"@microsoft/windows-admin-center-sdk": "latest",';
@@ -109,7 +123,8 @@ function updateFiles(path, company, primary, secondary, version) {
 	if (version === 'experimental') {
 		cleanDirectory[gulpFilePath] = {
 			'{!company-name}.{!module-name}': manfiestName,
-			'{!guid}': uuidv4()
+			'{!guid}': uuidv4(),
+			'{!company-package-id}' : companyPackageIdentifier
 		};
 	}
 

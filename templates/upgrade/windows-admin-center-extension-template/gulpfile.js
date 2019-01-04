@@ -16,14 +16,14 @@ const inlineNg2Template = require('gulp-inline-ng2-template');
 const childProcess = require('child_process');
 const ts = require('gulp-typescript');
 const sourcemaps = require('gulp-sourcemaps');
-const manifestResource = require('@microsoft/windows-admin-center-sdk/shell/dist/tools/gulp-manifest-resource');
-const gulpResJson = require('@microsoft/windows-admin-center-sdk/shell/dist/tools/gulp-resjson');
-const gulpMergeJsonInFolders = require('@microsoft/windows-admin-center-sdk/shell/dist/tools/gulp-merge-json-in-folders');
-const psCim = require('@microsoft/windows-admin-center-sdk/shell/dist/tools/gulp-ps-cim');
-const psCode = require('@microsoft/windows-admin-center-sdk/shell/dist/tools/gulp-ps-code');
-const psModule = require('@microsoft/windows-admin-center-sdk/shell/dist/tools/gulp-ps-module');
-const psManifest = require('@microsoft/windows-admin-center-sdk/shell/dist/tools/gulp-ps-manifest');
-const gulpManifestValidator = require('@microsoft/windows-admin-center-sdk/shell/dist/tools/gulp-manifest-validator');
+const manifestResource = require('@microsoft/windows-admin-center-sdk/dist/tools/gulp-manifest-resource');
+const gulpResJson = require('@microsoft/windows-admin-center-sdk/dist/tools/gulp-resjson');
+const gulpMergeJsonInFolders = require('@microsoft/windows-admin-center-sdk/dist/tools/gulp-merge-json-in-folders');
+const psCim = require('@microsoft/windows-admin-center-sdk/dist/tools/gulp-ps-cim');
+const psCode = require('@microsoft/windows-admin-center-sdk/dist/tools/gulp-ps-code');
+const psModule = require('@microsoft/windows-admin-center-sdk/dist/tools/gulp-ps-module');
+const psManifest = require('@microsoft/windows-admin-center-sdk/dist/tools/gulp-ps-manifest');
+const gulpManifestValidator = require('@microsoft/windows-admin-center-sdk/dist/tools/gulp-manifest-validator');
 const ngc = require('@angular/compiler-cli/src/main');
 
 const args = {
@@ -77,7 +77,7 @@ gulp.task('merge-localized-json', () => {
 
 gulp.task('update-manifest-resource', () => {
     return gulp.src(['src/resources/strings/strings.resjson', 'loc/output/**/*.resjson'])
-        .pipe(manifestResource({ resourceName: 'MsftSmeEventViewer' }))
+        .pipe(manifestResource({ resourceName: '{!company-package-id}' }))
         .pipe(gulp.dest('.'));
 });
 
@@ -91,7 +91,7 @@ const powerShellModule = {
     guid: '{!guid}',
     list: [
         'src',
-        'node_modules/@microsoft/windows-admin-center-sdk/shell/dist'
+        'node_modules/@microsoft/windows-admin-center-sdk/dist'
     ]
 };
 
@@ -234,7 +234,7 @@ const config = {
     e2e: {
         src: '/e2e',
         dest: '/dist/e2e',
-        commonCodeFolder: '/node_modules/@microsoft/windows-admin-center-sdk/shell/e2e',
+        commonCodeFolder: '/node_modules/@microsoft/windows-admin-center-sdk/e2e',
         generatedStringsFolder: 'src/assets/strings',
         assetsFolder: '/dist/assets',
         jasmine: {
