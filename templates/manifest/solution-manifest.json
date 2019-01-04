@@ -65,7 +65,7 @@
             }
         },
         {
-            "locale": "cs",
+            "locale": "cs-CZ",
             "strings": {
                 "keyword-example": "example",
                 "description": "{!product-description}",
@@ -75,7 +75,7 @@
             }
         },
         {
-            "locale": "de",
+            "locale": "de-DE",
             "strings": {
                 "keyword-example": "example",
                 "description": "{!product-description}",
@@ -85,7 +85,7 @@
             }
         },
         {
-            "locale": "es",
+            "locale": "en-US",
             "strings": {
                 "keyword-example": "example",
                 "description": "{!product-description}",
@@ -95,7 +95,7 @@
             }
         },
         {
-            "locale": "fr",
+            "locale": "es-ES",
             "strings": {
                 "keyword-example": "example",
                 "description": "{!product-description}",
@@ -105,7 +105,7 @@
             }
         },
         {
-            "locale": "hu",
+            "locale": "fr-FR",
             "strings": {
                 "keyword-example": "example",
                 "description": "{!product-description}",
@@ -115,7 +115,7 @@
             }
         },
         {
-            "locale": "it",
+            "locale": "hu-HU",
             "strings": {
                 "keyword-example": "example",
                 "description": "{!product-description}",
@@ -125,7 +125,7 @@
             }
         },
         {
-            "locale": "ja",
+            "locale": "it-IT",
             "strings": {
                 "keyword-example": "example",
                 "description": "{!product-description}",
@@ -135,7 +135,7 @@
             }
         },
         {
-            "locale": "ko",
+            "locale": "ja-JP",
             "strings": {
                 "keyword-example": "example",
                 "description": "{!product-description}",
@@ -145,7 +145,7 @@
             }
         },
         {
-            "locale": "nl",
+            "locale": "ko-KR",
             "strings": {
                 "keyword-example": "example",
                 "description": "{!product-description}",
@@ -155,7 +155,17 @@
             }
         },
         {
-            "locale": "pl",
+            "locale": "nl-NL",
+            "strings": {
+                "keyword-example": "example",
+                "description": "{!product-description}",
+                "displayName": "{!secondary-display-name}",
+                "solutionName": "{!primary-display-name}",
+                "solutionDescription": "{!solution-description}"
+            }
+        },
+        {
+            "locale": "pl-PL",
             "strings": {
                 "keyword-example": "example",
                 "description": "{!product-description}",
@@ -185,7 +195,7 @@
             }
         },
         {
-            "locale": "ru",
+            "locale": "ru-RU",
             "strings": {
                 "keyword-example": "example",
                 "description": "{!product-description}",
@@ -195,7 +205,7 @@
             }
         },
         {
-            "locale": "sv",
+            "locale": "sv-SE",
             "strings": {
                 "keyword-example": "example",
                 "description": "{!product-description}",
@@ -205,7 +215,7 @@
             }
         },
         {
-            "locale": "tr",
+            "locale": "tr-TR",
             "strings": {
                 "keyword-example": "example",
                 "description": "{!product-description}",
@@ -215,7 +225,7 @@
             }
         },
         {
-            "locale": "zh-Hans",
+            "locale": "zh-CN",
             "strings": {
                 "keyword-example": "example",
                 "description": "{!product-description}",
@@ -225,7 +235,7 @@
             }
         },
         {
-            "locale": "zh-Hant",
+            "locale": "zh-TW",
             "strings": {
                 "keyword-example": "example",
                 "description": "{!product-description}",
