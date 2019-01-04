@@ -26,7 +26,7 @@ let version = argv.version ? argv.version.toLowerCase() : '';
 let extensionType = argv.solution ? 'solution' : 'tool';
 let normalizedSolution = argv.solution ? normalizeString(argv.solution) : '';
 
-if (argv.length === 0 || !isValidVersion(version)) {
+if (argv.length === 0 || !isValidVersion(version) || !normalizedCompany || !normalizedTool) {
 	console.error('Usage: wac create --company <company-name> --name <tool-name> --version <version-tag> [--verbose]');
 	console.log('or');
 	console.log('wac create --company <company-name> --solution <solution-name> --tool <tool-name> --type <tool-type> --version <version-tag> [--verbose]');
@@ -35,8 +35,8 @@ if (argv.length === 0 || !isValidVersion(version)) {
 	process.exit(1);
 }
 
-if(normalizedSolution === '') {
-	create(extensionType, normalizedCompany, normalizedTool, normalizedSolution, version);
+if (normalizedSolution === '') {
+	create(extensionType, normalizedCompany, normalizedTool, '', version);
 } else {
 	create(extensionType, normalizedCompany, normalizedSolution, normalizedTool, version);
 }
@@ -51,12 +51,23 @@ function create(type, company, primary, secondary, version) {
 
 		fse.copySync(templatePath, productPath);
 
-		if(type ==='tool') {
+		if (type === 'tool') {
 			// make tool manifest
 			fse.copyFileSync(manifestTemplatePath + '\\tool-manifest.json', productPath + '\\src\\manifest.json');
-		} else if(type === 'solution') {
+		} else if (type === 'solution') {
 			// make solution manifest
 			fse.copyFileSync(manifestTemplatePath + '\\solution-manifest.json', productPath + '\\src\\manifest.json');
+		}
+
+		if (version === 'next' || version === 'experimental') {
+			// copy new package.json for the angular 7 upgrade.
+			let upgradePackage = __dirname.substring(0, __dirname.length - 3) + 'templates\\upgrade\\package.json';
+			fse.copyFileSync(upgradePackage, productPath + '\\package.json');
+		}
+
+		if (version === 'experimental') {
+			let upgradeGulp = __dirname.substring(0, __dirname.length - 3) + 'templates\\upgrade\\gulpfile.js';
+			fse.copyFileSync(upgradeGulp, productPath + '\\gulpfile.js');
 		}
 
 		updateFiles(productPath, company, primary, secondary, version);
@@ -71,18 +82,20 @@ function updateFiles(path, company, primary, secondary, version) {
 	/	src/manifest.json
 	/	src/resources/strings/strings.resjson
 	/	src/main.ts
+	/	in Experimental: gulpfile.js
 	*/
 	var cleanDirectory = {};
 	let rootPackagePath = './' + primary + '/package.json';
 	let manifestFilePath = './' + primary + '/src/manifest.json';
 	let mainFilePath = './' + primary + '/src/main.ts';
 	let stringsFilePath = './' + primary + '/src/resources/strings/strings.resjson';
+	let gulpFilePath = './' + primary + '/gulpfile.js';
 
 	let packageName = '@' + company + '/' + primary;
 	let manfiestName = company.toLowerCase() + '.' + primary.toLowerCase();
 	let stringsProduct = primary.split('-').join(''); // Strings file cannot handle dashes.
 
-	if (version === 'next' || version === 'insider') {
+	if (version === 'next' || version === 'insider' || version === 'experimental') {
 		let existingVersion = '"@microsoft/windows-admin-center-sdk": "latest",';
 		cleanDirectory[rootPackagePath] = {
 			'@{!company-name}/{!product-name}': packageName,
@@ -91,6 +104,13 @@ function updateFiles(path, company, primary, secondary, version) {
 	}
 	else {
 		cleanDirectory[rootPackagePath] = { '@{!company-name}/{!product-name}': packageName };
+	}
+
+	if (version === 'experimental') {
+		cleanDirectory[gulpFilePath] = {
+			'{!company-name}.{!module-name}': manfiestName,
+			'{!guid}': uuidv4()
+		};
 	}
 
 	cleanDirectory[manifestFilePath] = {
@@ -145,5 +165,8 @@ function normalizeString(input) {
 }
 
 function isValidVersion(version) {
-	return version === 'next' || version === 'insider' || version === 'release' || version === '';
+	return version === 'next' || version === 'insider' || version === 'release' || version === '' || version === 'experimental';
 }
+
+// this came from here: https://gist.github.com/jed/982883
+function uuidv4(a) { return a ? (a ^ Math.random() * 16 >> a / 4).toString(16) : ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, uuidv4) }
