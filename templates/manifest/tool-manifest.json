@@ -6,7 +6,7 @@
     "target": "/modules/{!company-name}.{!module-name}",
     "icon": "sme-icon:icon-win-powerShell",
     "keywords": [
-        "resources:strings:keyword-example"
+        "resources:strings:keywords"
     ],
     "entryPoints": [
         {
@@ -36,7 +36,7 @@
         {
             "locale": "default",
             "strings": {
-                "keyword-example": "example",
+                "keywords": "example",
                 "description": "{!product-description}",
                 "displayName": "{!primary-display-name}"
             }
@@ -44,7 +44,7 @@
         {
             "locale": "cs-CZ",
             "strings": {
-                "keyword-example": "example",
+                "keywords": "example",
                 "description": "{!product-description}",
                 "displayName": "{!primary-display-name}"
             }
@@ -52,7 +52,7 @@
         {
             "locale": "de-DE",
             "strings": {
-                "keyword-example": "example",
+                "keywords": "example",
                 "description": "{!product-description}",
                 "displayName": "{!primary-display-name}"
             }
@@ -60,7 +60,7 @@
         {
             "locale": "en-US",
             "strings": {
-                "keyword-example": "example",
+                "keywords": "example",
                 "description": "{!product-description}",
                 "displayName": "{!primary-display-name}"
             }
@@ -68,7 +68,7 @@
         {
             "locale": "es-ES",
             "strings": {
-                "keyword-example": "example",
+                "keywords": "example",
                 "description": "{!product-description}",
                 "displayName": "{!primary-display-name}"
             }
@@ -76,7 +76,7 @@
         {
             "locale": "fr-FR",
             "strings": {
-                "keyword-example": "example",
+                "keywords": "example",
                 "description": "{!product-description}",
                 "displayName": "{!primary-display-name}"
             }
@@ -84,7 +84,7 @@
         {
             "locale": "hu-HU",
             "strings": {
-                "keyword-example": "example",
+                "keywords": "example",
                 "description": "{!product-description}",
                 "displayName": "{!primary-display-name}"
             }
@@ -92,7 +92,7 @@
         {
             "locale": "it-IT",
             "strings": {
-                "keyword-example": "example",
+                "keywords": "example",
                 "description": "{!product-description}",
                 "displayName": "{!primary-display-name}"
             }
@@ -100,7 +100,7 @@
         {
             "locale": "ja-JP",
             "strings": {
-                "keyword-example": "example",
+                "keywords": "example",
                 "description": "{!product-description}",
                 "displayName": "{!primary-display-name}"
             }
@@ -108,7 +108,7 @@
         {
             "locale": "ko-KR",
             "strings": {
-                "keyword-example": "example",
+                "keywords": "example",
                 "description": "{!product-description}",
                 "displayName": "{!primary-display-name}"
             }
@@ -124,7 +124,15 @@
         {
             "locale": "pl-PL",
             "strings": {
-                "keyword-example": "example",
+                "keywords": "example",
+                "description": "{!product-description}",
+                "displayName": "{!primary-display-name}"
+            }
+        },
+        {
+            "locale": "pl-PL",
+            "strings": {
+                "keywords": "example",
                 "description": "{!product-description}",
                 "displayName": "{!primary-display-name}"
             }
@@ -132,7 +140,7 @@
         {
             "locale": "pt-BR",
             "strings": {
-                "keyword-example": "example",
+                "keywords": "example",
                 "description": "{!product-description}",
                 "displayName": "{!primary-display-name}"
             }
@@ -140,7 +148,7 @@
         {
             "locale": "pt-PT",
             "strings": {
-                "keyword-example": "example",
+                "keywords": "example",
                 "description": "{!product-description}",
                 "displayName": "{!primary-display-name}"
             }
@@ -148,7 +156,7 @@
         {
             "locale": "ru-RU",
             "strings": {
-                "keyword-example": "example",
+                "keywords": "example",
                 "description": "{!product-description}",
                 "displayName": "{!primary-display-name}"
             }
@@ -156,7 +164,7 @@
         {
             "locale": "sv-SE",
             "strings": {
-                "keyword-example": "example",
+                "keywords": "example",
                 "description": "{!product-description}",
                 "displayName": "{!primary-display-name}"
             }
@@ -164,7 +172,7 @@
         {
             "locale": "tr-TR",
             "strings": {
-                "keyword-example": "example",
+                "keywords": "example",
                 "description": "{!product-description}",
                 "displayName": "{!primary-display-name}"
             }
@@ -172,7 +180,7 @@
         {
             "locale": "zh-CN",
             "strings": {
-                "keyword-example": "example",
+                "keywords": "example",
                 "description": "{!product-description}",
                 "displayName": "{!primary-display-name}"
             }
@@ -180,7 +188,7 @@
         {
             "locale": "zh-TW",
             "strings": {
-                "keyword-example": "example",
+                "keywords": "example",
                 "description": "{!product-description}",
                 "displayName": "{!primary-display-name}"
             }

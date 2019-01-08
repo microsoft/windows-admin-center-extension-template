@@ -140,7 +140,8 @@ function updateFiles(path, company, primary, secondary, version) {
 	cleanDirectory[stringsFilePath] = {
 		'{!product-display-name}': stringsProduct,
 		'{!product-title}': stringsProduct,
-		'{!ProductName}': stringsProduct
+		'{!ProductName}': stringsProduct,
+		'{!CompanyName}': company
 	};
 
 	cleanDirectory[mainFilePath] = { '{!company-name}.{!product-name}': manfiestName };

@@ -12,7 +12,7 @@ const appRoutes: Routes = [
         component: IdleComponent
     },
     {
-        path: '', 
+        path: '',
         loadChildren: './default/default.module#DefaultModule'
     },
     // this child route is used to route back to the home path when an invalid URL is provided to the browser.

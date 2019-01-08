@@ -154,17 +154,7 @@ gulp.task('copy', () => {
 });
 
 gulp.task('build', (cb) => {
-    runSequence('clean', 'validate', 'generate', 'lint', 'compile', 'copy', 'test', 'lib', 'bundle', cb);
-});
-
-gulp.task('lib', cb => {
-    var args = ['build', 'module-lib'];
-    gutil.log('ng', args.join(' '));
-    var errors = [];
-    var cmd = childProcess.spawn('ng.cmd', args);
-    cmd.stdout.on('data', function (data) { gutil.log(data.toString()); });
-    cmd.stderr.on('data', function (data) { gutil.log(data.toString()); errors.push(data.toString()); });
-    cmd.on('exit', function (code) { errors.length > 0 ? cb(errors.join('\n')) : cb(); });
+    runSequence('clean', 'validate', 'generate', 'lint', 'compile', 'copy', 'test', 'bundle', cb);
 });
 
 gulp.task('bundle', cb => {
