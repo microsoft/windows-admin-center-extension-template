@@ -17,6 +17,7 @@ const manifestUrlSearch = '{!manifest-url}'
 *	--tool - name of the tool / extension that is being built.
 **/
 const cwd = process.cwd();
+const ignoresPath = __dirname.substring(0, __dirname.length - 3) + 'templates\\ignores';
 const templatePath = __dirname.substring(0, __dirname.length - 3) + 'templates\\windows-admin-center-extension-template';
 const upgradedTemplatePath = __dirname.substring(0, __dirname.length - 3) + 'templates\\upgrade\\windows-admin-center-extension-template';
 const manifestTemplatePath = __dirname.substring(0, __dirname.length - 3) + 'templates\\manifest';
@@ -55,6 +56,8 @@ function create(type, company, primary, secondary, version) {
 		} else {
 			fse.copySync(upgradedTemplatePath, productPath);
 		}
+
+		fse.copySync(ignoresPath, productPath);
 
 		if (type === 'tool') {
 			// make tool manifest
