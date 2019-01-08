@@ -57,7 +57,8 @@ function create(type, company, primary, secondary, version) {
 			fse.copySync(upgradedTemplatePath, productPath);
 		}
 
-		fse.copySync(ignoresPath, productPath);
+		fse.copyFileSync(ignoresPath + '\\git', productPath + '\\.gitignore');
+		fse.copyFileSync(ignoresPath + '\\npm', productPath + '\\.npmignore');
 
 		if (type === 'tool') {
 			// make tool manifest
