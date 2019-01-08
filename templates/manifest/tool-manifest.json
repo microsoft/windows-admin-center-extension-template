@@ -116,6 +116,14 @@
         {
             "locale": "nl-NL",
             "strings": {
+                "keyword-example": "example",
+                "description": "{!product-description}",
+                "displayName": "{!primary-display-name}"
+            }
+        },
+        {
+            "locale": "pl-PL",
+            "strings": {
                 "keywords": "example",
                 "description": "{!product-description}",
                 "displayName": "{!primary-display-name}"
