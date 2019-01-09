@@ -16,14 +16,14 @@ const inlineNg2Template = require('gulp-inline-ng2-template');
 const childProcess = require('child_process');
 const ts = require('gulp-typescript');
 const sourcemaps = require('gulp-sourcemaps');
-const manifestResource = require('@microsoft/windows-admin-center-sdk/dist/tools/gulp-manifest-resource');
-const gulpResJson = require('@microsoft/windows-admin-center-sdk/dist/tools/gulp-resjson');
-const gulpMergeJsonInFolders = require('@microsoft/windows-admin-center-sdk/dist/tools/gulp-merge-json-in-folders');
-const psCim = require('@microsoft/windows-admin-center-sdk/dist/tools/gulp-ps-cim');
-const psCode = require('@microsoft/windows-admin-center-sdk/dist/tools/gulp-ps-code');
-const psModule = require('@microsoft/windows-admin-center-sdk/dist/tools/gulp-ps-module');
-const psManifest = require('@microsoft/windows-admin-center-sdk/dist/tools/gulp-ps-manifest');
-const gulpManifestValidator = require('@microsoft/windows-admin-center-sdk/dist/tools/gulp-manifest-validator');
+const manifestResource = require('@microsoft/windows-admin-center-sdk/tools/gulp-manifest-resource');
+const gulpResJson = require('@microsoft/windows-admin-center-sdk/tools/gulp-resjson');
+const gulpMergeJsonInFolders = require('@microsoft/windows-admin-center-sdk/tools/gulp-merge-json-in-folders');
+const psCim = require('@microsoft/windows-admin-center-sdk/tools/gulp-ps-cim');
+const psCode = require('@microsoft/windows-admin-center-sdk/tools/gulp-ps-code');
+const psModule = require('@microsoft/windows-admin-center-sdk/tools/gulp-ps-module');
+const psManifest = require('@microsoft/windows-admin-center-sdk/tools/gulp-ps-manifest');
+const gulpManifestValidator = require('@microsoft/windows-admin-center-sdk/tools/gulp-manifest-validator');
 const ngc = require('@angular/compiler-cli/src/main');
 
 const args = {
@@ -91,7 +91,7 @@ const powerShellModule = {
     guid: '{!guid}',
     list: [
         'src',
-        'node_modules/@microsoft/windows-admin-center-sdk/dist'
+        'node_modules/@microsoft/windows-admin-center-sdk'
     ]
 };
 
