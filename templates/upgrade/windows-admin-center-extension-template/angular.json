@@ -23,7 +23,7 @@
               "src/manifest.json"
             ],
             "styles": [
-              "node_modules/@microsoft/windows-admin-center-sdk/assets/styles/main.css"
+              "node_modules/@microsoft/windows-admin-center-sdk/styles/css/main.css"
             ],
             "scripts": [
               "node_modules/jquery/dist/jquery.min.js"
