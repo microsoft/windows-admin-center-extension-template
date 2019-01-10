@@ -108,7 +108,7 @@ function updateFiles(path, company, primary, secondary, version) {
 	let stringsFilePath = './' + primary + '/src/resources/strings/strings.resjson';
 	let gulpFilePath = './' + primary + '/gulpfile.js';
 
-	let packageName = '@' + company + '/' + primary;
+	let packageName = '@' + company.toLowerCase() + '/' + primary.toLowerCase();
 	let manfiestName = company.toLowerCase() + '.' + primary.toLowerCase();
 	let stringsProduct = primary.split('-').join(''); // Strings file cannot handle dashes.
 	let companyPackageIdentifier = company.split('-').join('') + primary.split('-').join('');
