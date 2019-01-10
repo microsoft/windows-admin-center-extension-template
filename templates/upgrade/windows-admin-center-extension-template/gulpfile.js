@@ -70,7 +70,7 @@ gulp.task('generate-resjson-interface', () => {
 });
 
 gulp.task('merge-localized-json', () => {
-    return gulp.src('./node_modules/@microsoft/windows-admin-center-sdk/**/dist/assets/strings')
+    return gulp.src('./node_modules/@microsoft/windows-admin-center-sdk/**/assets/strings')
         .pipe(gulpMergeJsonInFolders({ src: './src/assets/strings' }))
         .pipe(gulp.dest('src/assets/strings'));
 });
