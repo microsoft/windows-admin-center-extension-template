@@ -13,7 +13,8 @@ import {
     LoadingWheelModule,
     PipesModule,
     ResourceService,
-    SmeUxModule
+    SmeStylesModule,
+    SvgModule
 } from '@microsoft/windows-admin-center-sdk/angular';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -28,7 +29,8 @@ import { AppComponent } from './app.component';
         BrowserModule,
         DialogModule,
         FormsModule,
-        SmeUxModule,
+        SmeStylesModule,
+        SvgModule,
         IconModule,
         LoadingWheelModule,
         GuidedPanelModule,
