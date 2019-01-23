@@ -111,6 +111,7 @@ function updateFiles(path, company, primary, secondary, version) {
 	let packageName = '@' + company.toLowerCase() + '/' + primary.toLowerCase();
 	let manfiestName = company.toLowerCase() + '.' + primary.toLowerCase();
 	let stringsProduct = primary.split('-').join(''); // Strings file cannot handle dashes.
+	let stringsCompany = company.split('-').join('');
 	let companyPackageIdentifier = company.split('-').join('') + primary.split('-').join('');
 
 	if (version === 'next' || version === 'insider' || version === 'experimental') {
@@ -145,7 +146,7 @@ function updateFiles(path, company, primary, secondary, version) {
 		'{!product-display-name}': stringsProduct,
 		'{!product-title}': stringsProduct,
 		'{!ProductName}': stringsProduct,
-		'{!CompanyName}': company
+		'{!CompanyName}': stringsCompany
 	};
 
 	cleanDirectory[mainFilePath] = { '{!company-name}.{!product-name}': manfiestName };
