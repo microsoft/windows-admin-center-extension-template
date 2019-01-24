@@ -1,46 +1,59 @@
-#!/usr/bin/env node
-
 var fse = require('fs-extra');
 var minimist = require('minimist');
 var path = require('path');
 var pathExists = require('path-exists');
+var update = require('./update-version');
 
 const argv = minimist(process.argv.slice(2));
-const packageNameSearch = '{!package-name}';
-const manfiestNameSearch = '{!manifest-name}';
-const manfiestTargetSearch = '{!manifest-target}';
-const manifestUrlSearch = '{!manifest-url}'
 
-/**
-*	Arguments:
-*	--company - name of the company or person making the extension.
-*	--tool - name of the tool / extension that is being built.
-**/
-const cwd = process.cwd();
-const ignoresPath = __dirname.substring(0, __dirname.length - 3) + 'templates\\ignores';
-const templatePath = __dirname.substring(0, __dirname.length - 3) + 'templates\\windows-admin-center-extension-template';
-const upgradedTemplatePath = __dirname.substring(0, __dirname.length - 3) + 'templates\\upgrade\\windows-admin-center-extension-template';
-const manifestTemplatePath = __dirname.substring(0, __dirname.length - 3) + 'templates\\manifest';
-let normalizedCompany = normalizeString(argv.company);
-let normalizedTool = normalizeString(argv.tool);
-
-let version = argv.version ? argv.version.toLowerCase() : '';
-let extensionType = argv.solution ? 'solution' : 'tool';
-let normalizedSolution = argv.solution ? normalizeString(argv.solution) : '';
-
-if (argv.length === 0 || !isValidVersion(version) || !normalizedCompany || !normalizedTool) {
-	console.error('Usage: wac create --company <company-name> --name <tool-name> --version <version-tag> [--verbose]');
-	console.log('or');
-	console.log('wac create --company <company-name> --solution <solution-name> --tool <tool-name> --type <tool-type> --version <version-tag> [--verbose]');
-	console.log('Valid version tags: \'latest\', \'insider\', \'next\'');
-	console.log('More information can be found here:');
-	process.exit(1);
+if (argv._ == 'updateSeven') {
+	update.update(argv.audit);
+}
+else if (argv._ === 'create') {
+	createExtension();
+}
+else {
+	console.log('unrecognized command: ' + argv._);
 }
 
-if (normalizedSolution === '') {
-	create(extensionType, normalizedCompany, normalizedTool, '', version);
-} else {
-	create(extensionType, normalizedCompany, normalizedSolution, normalizedTool, version);
+function createExtension() {
+	const packageNameSearch = '{!package-name}';
+	const manfiestNameSearch = '{!manifest-name}';
+	const manfiestTargetSearch = '{!manifest-target}';
+	const manifestUrlSearch = '{!manifest-url}'
+
+	/**
+	*	Arguments:
+	*	--company - name of the company or person making the extension.
+	*	--tool - name of the tool / extension that is being built.
+	*	--version - tag of the version to use.
+	**/
+	const cwd = process.cwd();
+	const ignoresPath = __dirname.substring(0, __dirname.length - 3) + 'templates\\ignores';
+	const templatePath = __dirname.substring(0, __dirname.length - 3) + 'templates\\windows-admin-center-extension-template';
+	const upgradedTemplatePath = __dirname.substring(0, __dirname.length - 3) + 'templates\\upgrade\\windows-admin-center-extension-template';
+	const manifestTemplatePath = __dirname.substring(0, __dirname.length - 3) + 'templates\\manifest';
+	let normalizedCompany = normalizeString(argv.company);
+	let normalizedTool = normalizeString(argv.tool);
+
+	let version = argv.version ? argv.version.toLowerCase() : '';
+	let extensionType = argv.solution ? 'solution' : 'tool';
+	let normalizedSolution = argv.solution ? normalizeString(argv.solution) : '';
+
+	if (argv.length === 0 || !isValidVersion(version) || !normalizedCompany || !normalizedTool) {
+		console.error('Usage: wac create --company <company-name> --name <tool-name> --version <version-tag> [--verbose]');
+		console.log('or');
+		console.log('wac create --company <company-name> --solution <solution-name> --tool <tool-name> --type <tool-type> --version <version-tag> [--verbose]');
+		console.log('Valid version tags: \'latest\', \'insider\', \'next\'');
+		console.log('More information can be found here:');
+		process.exit(1);
+	}
+
+	if (normalizedSolution === '') {
+		create(extensionType, normalizedCompany, normalizedTool, '', version);
+	} else {
+		create(extensionType, normalizedCompany, normalizedSolution, normalizedTool, version);
+	}
 }
 
 function create(type, company, primary, secondary, version) {
@@ -51,7 +64,7 @@ function create(type, company, primary, secondary, version) {
 		console.log(productPath);
 		fse.mkdirSync(primary);
 
-		if(version  !== 'experimental') {
+		if (version !== 'experimental') {
 			fse.copySync(templatePath, productPath);
 		} else {
 			fse.copySync(upgradedTemplatePath, productPath);
@@ -73,19 +86,6 @@ function create(type, company, primary, secondary, version) {
 			let upgradePackage = __dirname.substring(0, __dirname.length - 3) + 'templates\\upgrade\\package.json';
 			fse.copyFileSync(upgradePackage, productPath + '\\package.json');
 		}
-
-		// if (version === 'experimental') {
-		// 	let upgradeGulp = __dirname.substring(0, __dirname.length - 3) + 'templates\\upgrade\\gulpfile.js';
-		// 	fse.copyFileSync(upgradeGulp, productPath + '\\gulpfile.js');
-
-		// 	let upgradeTsconfig = __dirname.substring(0, __dirname.length - 3) + 'templates\\upgrade\\tsconfig.inline.json';
-		// 	fse.copyFileSync(upgradeTsconfig, productPath + '\\tsconfig.inline.json');
-
-		// 	// the old tsconfig file needs to be removed.  It uses a dash in the file name instead of a dot.
-		// 	fse.removeSync(productPath + '\\tsconfig-inline.json');
-
-		// 	fse.removeSync(productPath + '\\gulps');
-		// }
 
 		updateFiles(productPath, company, primary, secondary, version);
 		printOutro(primary);
@@ -129,7 +129,7 @@ function updateFiles(path, company, primary, secondary, version) {
 		cleanDirectory[gulpFilePath] = {
 			'{!company-name}.{!module-name}': manfiestName,
 			'{!guid}': uuidv4(),
-			'{!company-package-id}' : companyPackageIdentifier
+			'{!company-package-id}': companyPackageIdentifier
 		};
 	}
 
