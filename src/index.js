@@ -7,7 +7,7 @@ var update = require('./update-version');
 const argv = minimist(process.argv.slice(2));
 
 if (argv._ == 'updateSeven') {
-	update.update(argv.audit, process.cwd());
+	update.update((argv.audit === undefined || argv.audit === true) && argv.update === undefined, process.cwd());
 }
 else if (argv._ == 'create') {
 	createExtension();

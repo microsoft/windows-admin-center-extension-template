@@ -4,18 +4,25 @@ const fse = require('fs-extra');
 const { resolve } = require('path');
 const { readdir, stat } = require('fs').promises;
 const fs = require('fs');
+
 let updateCount = 0;
 let updateSource = [];
 
 module.exports = {
     update: function (audit, rootPath) {
-        console.log(`update called with ${audit} and ${rootPath}`);
-
         searchFolder(rootPath)
             .then(results => {
                 for (var file in results) {
                     searchFile(results[file], audit);
                 }
+
+                if (!audit) {
+                    copyNewFiles();
+                }
+
+                console.log('');
+                console.log('It is advisable to run \'ng lint --fix\' to automate the fixing of some new linting rules.');
+                console.log('');
 
                 finalize();
             });
@@ -23,7 +30,35 @@ module.exports = {
 }
 
 function finalize() {
-    console.log(`There are ${updateCount} updates that need to be handled.`);
+    fse.outputFileSync('UpgradeAudit.txt', updateSource);
+    console.log('');
+    console.log('|==========================================================|')
+    console.log(` There is(are) ${updateCount} update(s) that need to be handled.`);
+    console.log(` A log is available at ${process.cwd()}\\UpgradeAudit.txt`);
+    console.log('|==========================================================|')
+}
+
+function copyNewFiles() {
+    let ignoresPath = __dirname.substring(0, __dirname.length - 3) + 'templates\\ignores';
+    let upgradedTemplatePath = __dirname.substring(0, __dirname.length - 3) + 'templates\\upgrade\\windows-admin-center-extension-template';
+
+    fse.copyFileSync(ignoresPath + '\\git', '.\\.gitignore');
+    fse.copyFileSync(ignoresPath + '\\npm', '.\\.npmignore');
+    fse.copyFileSync(upgradedTemplatePath + '\\tslint.json', '.\\tslint.json');
+    fse.copyFileSync(upgradedTemplatePath + '\\gulpfile.js', '.\\gulpfile.js');
+    fse.copyFileSync(upgradedTemplatePath + '\\tsconfig.json', '.\\tsconfig.json');
+    fse.copyFileSync(upgradedTemplatePath + '\\angular.json', '.\\angular.json');
+    fse.copyFileSync(upgradedTemplatePath + '\\tsconfig.inline.json', '.\\tsconfig.inline.json');
+    fse.copyFileSync(upgradedTemplatePath + '\\src\\tsconfig.app.json', '.\\src\\tsconfig.app.json');
+    fse.copyFileSync(upgradedTemplatePath + '\\src\\tsconfig.spec.json', '.\\src\\tsconfig.spec.json');
+
+    if(fse.existsSync('.\\tsconfig-inline.json')) {
+        fs.unlinkSync('.\\tsconfig-inline.json');
+    }
+
+    if(fse.existsSync('.\\package-lock.json')) {
+        fs.unlinkSync('.\\package-lock.json');
+    }
 }
 
 async function searchFolder(folderPath) {
@@ -38,7 +73,9 @@ async function searchFolder(folderPath) {
 }
 
 function isValidDirectory(path) {
-    if (path.indexOf('src') < 0 ) {
+    if (path.indexOf('node_modules') >= 0 || path.indexOf('bundle') >= 0 || path.indexOf('dist') >= 0
+        || path.indexOf('inlineDist') >= 0 || path.indexOf('inlineSrc') >= 0 || path.indexOf('e2e') >= 0
+        || path.indexOf('gulps') >= 0 || path.indexOf('UpgradeAudit') >= 0) {
         return false;
     }
 
@@ -58,7 +95,7 @@ function searchFile(filePath, audit) {
         for (var actionKey in actions) {
             let displayNameIndex = fileData.indexOf(actionKey);
             if (displayNameIndex >= 0) {
-                let message = `Found: ${actionKey} in file: ${filePath}.  Required action: use ${actions[actionKey].content} instead.`;
+                let message = `Found: ${actionKey} in file: ${filePath}.  Required action: ${actions[actionKey].content}.`;
                 console.log(message);
                 updateSource.push(message);
 
@@ -69,10 +106,6 @@ function searchFile(filePath, audit) {
 
                 ++updateCount;
             }
-        }
-
-        if (!audit) {
-            editFile(filePath, editActions);
         }
     }
 }
@@ -113,20 +146,20 @@ function buildElements() {
         '.flex-layout': { action: 'warn', content: '.sme-arrange-stack-h OR .sme-arrange-stack-v' },
         '.font-bold': { action: 'edit', content: '.sme-font-emphasis1' },
         '.nav-tabs': { action: 'edit', content: 'sme-pivot component' },
-        '.acceptable': { action: 'warn', content: 'remove only' },
+        '.acceptable': { action: 'warn', content: 'deprecated - remove' },
         '.alert': { action: 'edit', content: 'sme-alert component' },
         '.alert-danger': { action: 'edit', content: 'sme-alert component' },
         '.breadCrumb': { action: 'edit', content: 'sme-alert component' },
         '.checkbox': { action: 'edit', content: 'sme-form-field[type="checkbox"]' },
-        '.color-error': { action: 'warn', content: 'remove only' },
-        '.color-info': { action: 'warn', content: 'remove only' },
-        '.color-success': { action: 'warn', content: 'remove only' },
-        '.color-warning': { action: 'warn', content: 'remove only' },
+        '.color-error': { action: 'warn', content: 'deprecated - remove' },
+        '.color-info': { action: 'warn', content: 'deprecated - remove' },
+        '.color-success': { action: 'warn', content: 'deprecated - remove' },
+        '.color-warning': { action: 'warn', content: 'deprecated - remove' },
         '.combobox': { action: 'edit', content: 'sme-form-field[type="select"]' },
-        '.delete-button': { action: 'warn', content: 'remove only' },
-        '.details-content': { action: 'edit', content: 'remove only' },
-        '.error-cover': { action: 'warn', content: 'remove only' },
-        '.error-message': { action: 'warn', content: 'remove only' },
+        '.delete-button': { action: 'warn', content: 'deprecated - remove' },
+        '.details-content': { action: 'edit', content: 'deprecated - remove' },
+        '.error-cover': { action: 'warn', content: 'deprecated - remove' },
+        '.error-message': { action: 'warn', content: 'deprecated - remove' },
         '.form-buttons': { action: 'warn', content: 'Please use sme-form-field components instead' },
         '.form-control': { action: 'warn', content: 'Please use sme-form-field components instead' },
         '.form-controls': { action: 'warn', content: 'Please use sme-form-field components instead' },
@@ -134,83 +167,83 @@ function buildElements() {
         '.form-group-label': { action: 'warn', content: 'Please use sme-form-field components instead' },
         '.form-input': { action: 'warn', content: 'Please use sme-form-field components instead' },
         '.form-stretch': { action: 'warn', content: 'Please use sme-form-field components instead' },
-        '.guided-pane-button': { action: 'warn', content: 'remove only' },
-        '.header-container': { action: 'warn', content: 'remove only' },
+        '.guided-pane-button': { action: 'warn', content: 'deprecated - remove' },
+        '.header-container': { action: 'warn', content: 'deprecated - remove' },
         '.highlight': { action: 'edit', content: '.sme-background-color-yellow' },
         '.horizontal': { action: 'edit', content: '.sme-arrange-stack-h' },
-        '.indent': { action: 'edit', content: 'remove only' },
+        '.indent': { action: 'warn', content: 'deprecated - remove' },
         '.input-file': { action: 'warn', content: 'Please use sme-form-field components instead' },
-        '.invalid': { action: 'warn', content: 'remove only' },
-        '.item-list': { action: 'warn', content: 'remove only' },
-        '.modal-scrollable': { action: 'warn', content: 'remove only' },
-        '.multi-section': { action: 'warn', content: 'remove only' },
-        '.no-action-bar': { action: 'warn', content: 'remove only' },
+        '.invalid': { action: 'warn', content: 'deprecated - remove' },
+        '.item-list': { action: 'warn', content: 'deprecated - remove' },
+        '.modal-scrollable': { action: 'warn', content: 'deprecated - remove' },
+        '.multi-section': { action: 'warn', content: 'deprecated - remove' },
+        '.no-action-bar': { action: 'warn', content: 'deprecated - remove' },
         '.no-scroll': { action: 'edit', content: '.sme-position-flex-auto' },
         '.nowrap': { action: 'warn', content: '.sme-arrange-stack-h OR .sme-arrange-stack-v' },
-        '.overflow-margins': { action: 'warn', content: 'remove only' },
-        '.overflow-tool': { action: 'warn', content: 'remove only' },
-        '.progress-cover': { action: 'warn', content: 'remove only' },
+        '.overflow-margins': { action: 'warn', content: 'deprecated - remove' },
+        '.overflow-tool': { action: 'warn', content: 'deprecated - remove' },
+        '.progress-cover': { action: 'warn', content: 'deprecated - remove' },
         '.radio': { action: 'warn', content: 'sme-form-field[type="radio"]' },
         '.relative': { action: 'edit', content: '.sme-layout-relative' },
         '.relative-center': { action: 'edit', content: '.sme-layout-absolute .sme-position-center' },
         '.required-clue': { action: 'warn', content: 'Please use sme-form-field components instead' },
         '.reverse': { action: 'edit', content: '.sme-arrange-stack-reversed' },
-        '.right-panel': { action: 'warn', content: 'remove only' },
-        '.rollup': { action: 'warn', content: 'remove only' },
-        '.rollup-status': { action: 'warn', content: 'remove only' },
-        '.rollup-title': { action: 'warn', content: 'remove only' },
-        '.rollup-value': { action: 'warn', content: 'remove only' },
+        '.right-panel': { action: 'warn', content: 'deprecated - remove' },
+        '.rollup': { action: 'warn', content: 'deprecated - remove' },
+        '.rollup-status': { action: 'warn', content: 'deprecated - remove' },
+        '.rollup-title': { action: 'warn', content: 'deprecated - remove' },
+        '.rollup-value': { action: 'warn', content: 'deprecated - remove' },
         '.searchbox': { action: 'warn', content: 'sme-form-field[type="search"]' },
-        '.searchbox-action-bar': { action: 'warn', content: 'remove only' },
-        '.size-h-1': { action: 'warn', content: 'remove only' },
-        '.size-h-2': { action: 'warn', content: 'remove only' },
-        '.size-h-3': { action: 'warn', content: 'remove only' },
-        '.size-h-4': { action: 'warn', content: 'remove only' },
-        '.size-h-full': { action: 'warn', content: 'remove only' },
-        '.size-h-half': { action: 'warn', content: 'remove only' },
-        '.size-v-1': { action: 'warn', content: 'remove only' },
-        '.size-v-2': { action: 'warn', content: 'remove only' },
-        '.size-v-3': { action: 'warn', content: 'remove only' },
-        '.size-v-4': { action: 'warn', content: 'remove only' },
-        '.status-icon': { action: 'edit', content: 'remove only' },
+        '.searchbox-action-bar': { action: 'warn', content: 'deprecated - remove' },
+        '.size-h-1': { action: 'warn', content: 'deprecated - remove' },
+        '.size-h-2': { action: 'warn', content: 'deprecated - remove' },
+        '.size-h-3': { action: 'warn', content: 'deprecated - remove' },
+        '.size-h-4': { action: 'warn', content: 'deprecated - remove' },
+        '.size-h-full': { action: 'warn', content: 'deprecated - remove' },
+        '.size-h-half': { action: 'warn', content: 'deprecated - remove' },
+        '.size-v-1': { action: 'warn', content: 'deprecated - remove' },
+        '.size-v-2': { action: 'warn', content: 'deprecated - remove' },
+        '.size-v-3': { action: 'warn', content: 'deprecated - remove' },
+        '.size-v-4': { action: 'warn', content: 'deprecated - remove' },
+        '.status-icon': { action: 'edit', content: 'deprecated - remove' },
         '.stretch-absolute': { action: 'edit', content: '.sme-layout-absolute .sme-position-inset-none' },
         '.stretch-fixed': { action: 'edit', content: '.sme-layout-fixed .sme-position-inset-none' },
         '.stretch-vertical': { action: 'edit', content: '.sme-position-stretch-v' },
         '.stretch-width': { action: 'edit', content: '.sme-position-stretch-h' },
-        '.svg-16px': { action: 'warn', content: 'remove only' },
-        '.table-indent': { action: 'warn', content: 'remove only' },
-        '.table-sm': { action: 'warn', content: 'remove only' },
-        '.thin': { action: 'warn', content: 'remove only' },
-        '.tile': { action: 'warn', content: 'remove only' },
-        '.tile-body': { action: 'warn', content: 'remove only' },
-        '.tile-content': { action: 'warn', content: 'remove only' },
-        '.tile-footer': { action: 'warn', content: 'remove only' },
-        '.tile-header': { action: 'warn', content: 'remove only' },
-        '.tile-layout': { action: 'warn', content: 'remove only' },
-        '.tile-table': { action: 'warn', content: 'remove only' },
-        '.tool-bar': { action: 'warn', content: 'remove only' },
+        '.svg-16px': { action: 'warn', content: 'deprecated - remove' },
+        '.table-indent': { action: 'warn', content: 'deprecated - remove' },
+        '.table-sm': { action: 'warn', content: 'deprecated - remove' },
+        '.thin': { action: 'warn', content: 'deprecated - remove' },
+        '.tile': { action: 'warn', content: 'deprecated - remove' },
+        '.tile-body': { action: 'warn', content: 'deprecated - remove' },
+        '.tile-content': { action: 'warn', content: 'deprecated - remove' },
+        '.tile-footer': { action: 'warn', content: 'deprecated - remove' },
+        '.tile-header': { action: 'warn', content: 'deprecated - remove' },
+        '.tile-layout': { action: 'warn', content: 'deprecated - remove' },
+        '.tile-table': { action: 'warn', content: 'deprecated - remove' },
+        '.tool-bar': { action: 'warn', content: 'deprecated - remove' },
         '.tool-container': { action: 'warn', content: 'sme-layout-content-zone or sme-layout-content-zone-padded' },
-        '.tool-header': { action: 'warn', content: 'remove only' },
-        '.tool-header-box': { action: 'warn', content: 'remove only' },
-        '.tool-pane': { action: 'warn', content: 'remove only' },
-        '.toolbar': { action: 'warn', content: 'remove only' },
-        '.usage-bar': { action: 'warn', content: 'remove only' },
-        '.usage-bar-area': { action: 'warn', content: 'remove only' },
-        '.usage-bar-background': { action: 'warn', content: 'remove only' },
-        '.usage-bar-title': { action: 'warn', content: 'remove only' },
-        '.usage-bar-value': { action: 'warn', content: 'remove only' },
-        '.usage-chart': { action: 'warn', content: 'remove only' },
-        '.usage-message': { action: 'warn', content: 'remove only' },
-        '.usage-message-area': { action: 'warn', content: 'remove only' },
-        '.usage-message-title': { action: 'warn', content: 'remove only' },
+        '.tool-header': { action: 'warn', content: 'deprecated - remove' },
+        '.tool-header-box': { action: 'warn', content: 'deprecated - remove' },
+        '.tool-pane': { action: 'warn', content: 'deprecated - remove' },
+        '.toolbar': { action: 'warn', content: 'deprecated - remove' },
+        '.usage-bar': { action: 'warn', content: 'deprecated - remove' },
+        '.usage-bar-area': { action: 'warn', content: 'deprecated - remove' },
+        '.usage-bar-background': { action: 'warn', content: 'deprecated - remove' },
+        '.usage-bar-title': { action: 'warn', content: 'deprecated - remove' },
+        '.usage-bar-value': { action: 'warn', content: 'deprecated - remove' },
+        '.usage-chart': { action: 'warn', content: 'deprecated - remove' },
+        '.usage-message': { action: 'warn', content: 'deprecated - remove' },
+        '.usage-message-area': { action: 'warn', content: 'deprecated - remove' },
+        '.usage-message-title': { action: 'warn', content: 'deprecated - remove' },
         '.vertical': { action: 'edit', content: '.sme-arrange-stack-v' },
         '.vertical-scroll-only': { action: 'edit', content: '.sme-arrange-overflow-hide-x sme-arrange-overflow-auto-y' },
-        '.warning': { action: 'warn', content: 'remove only' },
-        '.white-space': { action: 'warn', content: 'remove only' },
+        '.warning': { action: 'warn', content: 'deprecated - remove' },
+        '.white-space': { action: 'warn', content: 'deprecated - remove' },
         '.wrap': { action: 'warn', content: '.sme-arrange-wrapstack-h OR .sme-arrange-wrapstack-v' },
         '.btn': { action: 'warn', content: '.sme-button OR button' },
         '.btn-primary': { action: 'warn', content: '.sme-button.sme-button-primary OR button.sme-button-primary' },
         '.toggle-switch': { action: 'warn', content: 'sme-form-field[type="toggle-switch"]' },
-        '.icon-win': { action: 'warn', content: 'remove only' }
+        '.icon-win': { action: 'warn', content: 'deprecated - remove' }
     };
 }
