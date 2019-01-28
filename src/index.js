@@ -7,9 +7,9 @@ var update = require('./update-version');
 const argv = minimist(process.argv.slice(2));
 
 if (argv._ == 'updateSeven') {
-	update.update(argv.audit);
+	update.update(argv.audit, process.cwd());
 }
-else if (argv._ === 'create') {
+else if (argv._ == 'create') {
 	createExtension();
 }
 else {
@@ -17,22 +17,12 @@ else {
 }
 
 function createExtension() {
-	const packageNameSearch = '{!package-name}';
-	const manfiestNameSearch = '{!manifest-name}';
-	const manfiestTargetSearch = '{!manifest-target}';
-	const manifestUrlSearch = '{!manifest-url}'
-
 	/**
 	*	Arguments:
 	*	--company - name of the company or person making the extension.
 	*	--tool - name of the tool / extension that is being built.
 	*	--version - tag of the version to use.
 	**/
-	const cwd = process.cwd();
-	const ignoresPath = __dirname.substring(0, __dirname.length - 3) + 'templates\\ignores';
-	const templatePath = __dirname.substring(0, __dirname.length - 3) + 'templates\\windows-admin-center-extension-template';
-	const upgradedTemplatePath = __dirname.substring(0, __dirname.length - 3) + 'templates\\upgrade\\windows-admin-center-extension-template';
-	const manifestTemplatePath = __dirname.substring(0, __dirname.length - 3) + 'templates\\manifest';
 	let normalizedCompany = normalizeString(argv.company);
 	let normalizedTool = normalizeString(argv.tool);
 
@@ -57,6 +47,11 @@ function createExtension() {
 }
 
 function create(type, company, primary, secondary, version) {
+	const ignoresPath = __dirname.substring(0, __dirname.length - 3) + 'templates\\ignores';
+	const templatePath = __dirname.substring(0, __dirname.length - 3) + 'templates\\windows-admin-center-extension-template';
+	const upgradedTemplatePath = __dirname.substring(0, __dirname.length - 3) + 'templates\\upgrade\\windows-admin-center-extension-template';
+	const manifestTemplatePath = __dirname.substring(0, __dirname.length - 3) + 'templates\\manifest';
+
 	if (pathExists.sync(primary)) {
 		console.error('This tool definition already exists.  No changes have been made.')
 	} else {
