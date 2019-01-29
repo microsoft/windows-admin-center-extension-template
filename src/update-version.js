@@ -20,8 +20,13 @@ module.exports = {
                     copyNewFiles();
                 }
 
+                writePackageJsonUpdate();
+
                 console.log('');
-                console.log('It is advisable to run \'ng lint --fix\' to automate the fixing of some new linting rules.');
+                var lintMessage = 'It is advisable to run \'ng lint --fix\' to automate the fixing of some new linting rules.';
+                console.log(lintMessage);
+                updateSource.push('\n');
+                updateSource.push(lintMessage + '\n');
                 console.log('');
 
                 finalize();
@@ -58,6 +63,78 @@ function copyNewFiles() {
 
     if(fse.existsSync('.\\package-lock.json')) {
         fs.unlinkSync('.\\package-lock.json');
+    }
+
+    console.log('All new config and json files have been transferred.');
+}
+
+function writePackageJsonUpdate() {
+    // todo: read this from the package.json
+    let updates = [
+    '"@microsoft/windows-admin-center-sdk": "experimental"',
+    '"@angular/animations": "7.1.1"',
+    '"@angular/common": "7.1.1"',
+    '"@angular/compiler": "7.1.1"',
+    '"@angular/core": "7.1.1"',
+    '"@angular/forms": "7.1.1"',
+    '"@angular/language-service": "7.1.1"',
+    '"@angular/platform-browser": "7.1.1"',
+    '"@angular/platform-browser-dynamic": "7.1.1"',
+    '"@angular/router": "7.1.1"',
+    '"core-js": "2.6.0"',
+    '"rxjs": "6.3.3"',
+    '"zone.js": "0.8.26"',
+    '"@angular-devkit/build-angular": "^0.12.1"',
+    '"@angular-devkit/build-ng-packagr": "0.11.2"',
+    '"@angular/animations": "7.1.1"',
+    '"@angular/cli": "7.1.2"',
+    '"@angular/common": "7.1.1"',
+    '"@angular/compiler": "7.1.1"',
+    '"@angular/compiler-cli": "7.1.1"',
+    '"@angular/core": "7.1.1"',
+    '"@angular/forms": "7.1.1"',
+    '"@angular/language-service": "7.1.1"',
+    '"@angular/platform-browser": "7.1.1"',
+    '"@angular/platform-browser-dynamic": "7.1.1"',
+    '"@angular/router": "7.1.1"',
+    '"@types/chart.js": "2.7.40"',
+    '"@types/jasmine": "~2.8.8"',
+    '"@types/jasminewd2": "~2.0.3"',
+    '"@types/node": "8.9.5"',
+    '"ajv": "6.4.0"',
+    '"codelyzer": "4.5.0"',
+    '"core-js": "2.6.0"',
+    '"gulp": "^3.9.1"',
+    '"gulp-inline-ng2-template": "5.0.1"',
+    '"jasmine-core": "~2.99.1"',
+    '"jasmine-spec-reporter": "~4.2.1"',
+    '"karma": "^3.1.4"',
+    '"karma-jasmine": "~1.1.2"',
+    '"karma-remap-istanbul": "^0.6.0"',
+    '"ng-packagr": "4.4.0"',
+    '"readline-sync": "1.4.9"',
+    '"rxjs": "6.3.3"',
+    '"rxjs-tslint": "^0.1.5"',
+    '"rxjs-tslint-rules": "4.10.0"',
+    '"signalr": "2.3.0"',
+    '"ts-node": "1.2.1"',
+    '"tsickle": "0.33.1"',
+    '"tslint": "5.11.0"',
+    '"tslint-consistent-codestyle": "1.14.0"',
+    '"tslint-eslint-rules": "5.4.0"',
+    '"tslint-microsoft-contrib": "5.2.1"',
+    '"typescript": "3.1.6"',
+    '"zone.js": "0.8.26"'
+    ];
+
+    console.log('');
+    console.log('The following updates need to be made in your package.json file:');
+    updateSource.push('\n')
+    updateSource.push('The following updates need to be made in your package.json file:');
+
+    for(var i in updates) {
+        console.log(updates[i]);
+        updateSource.push(updates[i]  + '\n');
     }
 }
 
@@ -97,7 +174,7 @@ function searchFile(filePath, audit) {
             if (displayNameIndex >= 0) {
                 let message = `Found: ${actionKey} in file: ${filePath}.  Required action: ${actions[actionKey].content}.`;
                 console.log(message);
-                updateSource.push(message);
+                updateSource.push(message + '\n');
 
                 // if (!audit && actions[actionKey].action === 'edit') {
                 //     console.log(`editable function: ${actionKey}`);
