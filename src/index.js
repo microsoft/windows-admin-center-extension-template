@@ -1,6 +1,7 @@
+#!/usr/bin/env node
+
 var fse = require('fs-extra');
 var minimist = require('minimist');
-var path = require('path');
 var pathExists = require('path-exists');
 var update = require('./update-version');
 
