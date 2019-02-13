@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Modules>
-  <Module name="msft-sme-event-viewer" tdbuildteamid="195">
-    <File location="msft-sme-event-viewer" path="%TFS_SourcesDirectory%\src\resources\strings\strings.resjson" />
-  </Module>
-</Modules>

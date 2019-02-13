@@ -60,7 +60,7 @@ function create(type, company, primary, secondary, version) {
 		console.log(productPath);
 		fse.mkdirSync(primary);
 
-		if (version !== 'experimental') {
+		if (version !== 'experimental' && version !== 'next') {
 			fse.copySync(templatePath, productPath);
 		} else {
 			fse.copySync(upgradedTemplatePath, productPath);
@@ -75,12 +75,6 @@ function create(type, company, primary, secondary, version) {
 		} else if (type === 'solution') {
 			// make solution manifest
 			fse.copyFileSync(manifestTemplatePath + '\\solution-manifest.json', productPath + '\\src\\manifest.json');
-		}
-
-		if (version === 'next') {
-			// copy new package.json for the angular 7 upgrade.
-			let upgradePackage = __dirname.substring(0, __dirname.length - 3) + 'templates\\upgrade\\package.json';
-			fse.copyFileSync(upgradePackage, productPath + '\\package.json');
 		}
 
 		updateFiles(productPath, company, primary, secondary, version);
