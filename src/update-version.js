@@ -56,6 +56,7 @@ function copyNewFiles() {
     fse.copyFileSync(upgradedTemplatePath + '\\tsconfig.inline.json', '.\\tsconfig.inline.json');
     fse.copyFileSync(upgradedTemplatePath + '\\src\\tsconfig.app.json', '.\\src\\tsconfig.app.json');
     fse.copyFileSync(upgradedTemplatePath + '\\src\\tsconfig.spec.json', '.\\src\\tsconfig.spec.json');
+    fse.copyFileSync(upgradedTemplatePath + '\\src\\polyfills.ts', '.\\src\\polyfills.ts');
 
     if(fse.existsSync('.\\tsconfig-inline.json')) {
         fs.unlinkSync('.\\tsconfig-inline.json');
@@ -71,7 +72,7 @@ function copyNewFiles() {
 function writePackageJsonUpdate() {
     // todo: read this from the package.json
     let updates = [
-    '"@microsoft/windows-admin-center-sdk": "experimental"',
+    '"@microsoft/windows-admin-center-sdk": "next"',
     '"@angular/animations": "7.1.1"',
     '"@angular/common": "7.1.1"',
     '"@angular/compiler": "7.1.1"',
@@ -128,9 +129,9 @@ function writePackageJsonUpdate() {
     ];
 
     console.log('');
-    console.log('The following updates need to be made in your package.json file:');
+    console.log('The following updates need to be made in your package.json file (if they haven\'t already been made):');
     updateSource.push('\n')
-    updateSource.push('The following updates need to be made in your package.json file:');
+    updateSource.push('The following updates need to be made in your package.json file (if they haven\'t already been made):');
 
     for(var i in updates) {
         console.log(updates[i]);
