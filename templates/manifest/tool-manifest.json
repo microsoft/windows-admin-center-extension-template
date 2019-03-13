@@ -4,7 +4,7 @@
     "displayName": "resources:strings:displayName",
     "description": "resources:strings:description",
     "target": "/modules/{!company-name}.{!module-name}",
-    "icon": "sme-icon:icon-win-powerShell",
+    "icon": "sme-icon:sme-icon-powerShell",
     "keywords": [
         "resources:strings:keywords"
     ],
@@ -15,7 +15,7 @@
           "urlName": "{!primary-url-name}",
           "displayName": "resources:strings:displayName",
           "description": "resources:strings:description",
-          "icon": "sme-icon:icon-win-powerShell",
+          "icon": "sme-icon:sme-icon-powerShell",
           "path": "",
           "requirements": [
                 {
