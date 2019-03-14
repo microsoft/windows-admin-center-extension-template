@@ -35,7 +35,7 @@ function createExtension() {
 		console.error('Usage: wac create --company <company-name> --name <tool-name> --version <version-tag> [--verbose]');
 		console.log('or');
 		console.log('wac create --company <company-name> --solution <solution-name> --tool <tool-name> --type <tool-type> --version <version-tag> [--verbose]');
-		console.log('Valid version tags: \'latest\', \'insider\', \'next\'');
+		console.log('Valid version tags: \'latest\', \'insider\', \'next\', \'experimential\'');
 		console.log('More information can be found here:');
 		process.exit(1);
 	}
@@ -176,7 +176,7 @@ function normalizeString(input) {
 }
 
 function isValidVersion(version) {
-	return version === 'next' || version === 'insider' || version === 'release' || version === '' || version === 'experimental';
+	return version === 'latest' || version === 'next' || version === 'insider' || version === 'release' || version === '' || version === 'experimental';
 }
 
 // this came from here: https://gist.github.com/jed/982883
