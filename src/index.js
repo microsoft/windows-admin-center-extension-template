@@ -24,8 +24,8 @@ function createExtension() {
 	*	--tool - name of the tool / extension that is being built.
 	*	--version - tag of the version to use.
 	**/
-	let normalizedCompany = normalizeString(argv.company);
-	let normalizedTool = normalizeString(argv.tool);
+	let normalizedCompany = normalizeString(argv.company ? argv.company : '');
+	let normalizedTool = normalizeString(argv.tool ? argv.tool : '');
 
 	let version = argv.version ? argv.version.toLowerCase() : '';
 	let extensionType = argv.solution ? 'solution' : 'tool';
