@@ -60,7 +60,7 @@ function create(type, company, primary, secondary, version) {
 		console.log(productPath);
 		fse.mkdirSync(primary);
 
-		if (version !== 'experimental' && version !== 'next') {
+		if (version !== 'experimental' && version !== 'next' && version !== 'insider') {
 			fse.copySync(templatePath, productPath);
 		} else {
 			fse.copySync(upgradedTemplatePath, productPath);
@@ -103,12 +103,17 @@ function updateFiles(path, company, primary, secondary, version) {
 	let stringsProduct = primary.split('-').join(''); // Strings file cannot handle dashes.
 	let stringsCompany = company.split('-').join('');
 	let companyPackageIdentifier = company.split('-').join('') + primary.split('-').join('');
-
-	if (version === 'next' || version === 'insider' || version === 'experimental') {
-		let existingVersion = '"@microsoft/windows-admin-center-sdk": "latest",';
+	
+	/*
+	/ Default version is 'latest' in windows-admin-center-extension-template/package.json
+	/ Default version is 'insider' in upgrade/windows-admin-center-extension-template/package.json
+	/ Only change default versions when on 'next' or 'experimental' while two versions of template extension exist
+	*/
+	if (version === 'next' || version === 'experimental') {
+		let existingVersion = '"@microsoft/windows-admin-center-sdk": "insider",';
 		cleanDirectory[rootPackagePath] = {
 			'@{!company-name}/{!product-name}': packageName,
-			'"@microsoft/windows-admin-center-sdk": "latest",': existingVersion.replace('latest', version)
+			'"@microsoft/windows-admin-center-sdk": "insider",': existingVersion.replace('insider', version)
 		};
 	}
 	else {
