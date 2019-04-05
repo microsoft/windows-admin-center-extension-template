@@ -35,7 +35,7 @@ function createExtension() {
 		console.error('Usage: wac create --company <company-name> --name <tool-name> --version <version-tag> [--verbose]');
 		console.log('or');
 		console.log('wac create --company <company-name> --solution <solution-name> --tool <tool-name> --type <tool-type> --version <version-tag> [--verbose]');
-		console.log('Valid version tags: \'latest\', \'insider\', \'next\', \'experimential\'');
+		console.log('Valid version tags: \'latest\', \'insider\', \'next\', \'experimental\'');
 		console.log('More information can be found here:');
 		process.exit(1);
 	}
