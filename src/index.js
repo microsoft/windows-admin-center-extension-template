@@ -77,12 +77,12 @@ function create(type, company, primary, secondary, version) {
 			fse.copyFileSync(manifestTemplatePath + '\\solution-manifest.json', productPath + '\\src\\manifest.json');
 		}
 
-		updateFiles(productPath, company, primary, secondary, version);
+		updateFiles(company, primary, secondary, version);
 		printOutro(primary);
 	}
 }
 
-function updateFiles(path, company, primary, secondary, version) {
+function updateFiles(company, primary, secondary, version) {
 	/* 
 	/ files that need updating:
 	/	root package.json
@@ -108,7 +108,7 @@ function updateFiles(path, company, primary, secondary, version) {
 	/ Default version is 'legacy' in legacy/windows-admin-center-extension-template/package.json
 	/ Default version is 'latest' in windows-admin-center-extension-template/package.json
 	*/
-	if (version !== 'legacy' && version !== '' && version !== 'latest') {
+	if (version === 'next' || version === 'insider' || version === 'experimental') {
 		let existingVersion = '"@microsoft/windows-admin-center-sdk": "latest",';
 		cleanDirectory[rootPackagePath] = {
 			'@{!company-name}/{!product-name}': packageName,
