@@ -96,7 +96,8 @@ function updateFiles(company, primary, secondary, version) {
 	let manifestFilePath = './' + primary + '/src/manifest.json';
 	let mainFilePath = './' + primary + '/src/main.ts';
 	let stringsFilePath = './' + primary + '/src/resources/strings/strings.resjson';
-	let gulpFilePath = './' + primary + '/gulpfile.js';
+	let gulpFilePath = './' + primary + '/gulpfile.ts/config-data.ts';
+	let e2eSpecFilePath = './' + primary + '/e2e/specs/app.e2e-spec.ts';
 
 	let packageName = '@' + company.toLowerCase() + '/' + primary.toLowerCase();
 	let manfiestName = company.toLowerCase() + '.' + primary.toLowerCase();
@@ -120,10 +121,15 @@ function updateFiles(company, primary, secondary, version) {
 
 	if (version !== 'legacy') {
 		cleanDirectory[gulpFilePath] = {
+			'{!CompanyName}{!ProductName}': stringsCompany + stringsProduct,
 			'{!company-name}.{!module-name}': manfiestName,
 			'{!guid}': uuidv4(),
 			'{!company-package-id}': companyPackageIdentifier
 		};
+
+		cleanDirectory[e2eSpecFilePath] = {
+			'{!product-title}': stringsProduct
+		}
 	}
 
 	cleanDirectory[manifestFilePath] = {
