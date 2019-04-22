@@ -1,8 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
-// node cannot read ES6 files so we use babel to transpile them
+
+// node cannot read ES6 files so we use babel to transpile them
 let babelCompileLibraries = [
-    '/node_modules/@msft-sme/',
+    '/node_modules/@microsoft/windows-admin-center-sdk',
     '/node_modules/@angular/',
     '/dist/'
 ];

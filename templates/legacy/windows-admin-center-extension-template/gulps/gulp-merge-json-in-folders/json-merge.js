@@ -18,13 +18,13 @@ var JsonMerge = (function () {
      *                              es/strings.json
      *                              pt/strings.json
      * [
-     *     'node_modules/@msft-sme/core/dist/assets/resources/strings',
-     *     'node_modules/@msft-sme/ng2/dist/assets/resources/strings'
+     *     'node_modules/@microsoft/windows-admin-center-sdk/core/dist/assets/resources/strings',
+     *     'node_modules/@microsoft/windows-admin-center-sdk/ng2/dist/assets/resources/strings'
      * ] <- sourceFoldersPath
      *
      *                               src/assets/resources/strings/strings.json contents are merged with the contents of
-     *  node_modules/@msft-sme/core/dist/assets/resources/strings/strings.json and
-     *  node_modules/@msft-ng2/core/dist/assets/resources/strings/strings.json
+     *  node_modules/@microsoft/windows-admin-center-sdk/core/dist/assets/resources/strings/strings.json and
+     *  node_modules/@microsoft/windows-admin-center-sdk/ng2/core/dist/assets/resources/strings/strings.json
      *  and the source file is overwritten by the merged content
      *
      * @param targetFolderPathRoot {string} The path of the base folder where the destination files are placed.
