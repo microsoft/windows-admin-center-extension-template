@@ -35,7 +35,7 @@ function createExtension() {
 		console.error('Usage: wac create --company <company-name> --name <tool-name> --version <version-tag> [--verbose]');
 		console.log('or');
 		console.log('wac create --company <company-name> --solution <solution-name> --tool <tool-name> --type <tool-type> --version <version-tag> [--verbose]');
-		console.log('Valid version tags: \'latest\', \'insider\', \'next\', \'experimental\'');
+		console.log('Valid version tags: \'legacy\', \'latest\', \'insider\', \'next\', \'experimental\'');
 		console.log('More information can be found here:');
 		process.exit(1);
 	}
@@ -49,8 +49,8 @@ function createExtension() {
 
 function create(type, company, primary, secondary, version) {
 	const ignoresPath = __dirname.substring(0, __dirname.length - 3) + 'templates\\ignores';
+	const legacyTemplatePath = __dirname.substring(0, __dirname.length - 3) + 'templates\\legacy\\windows-admin-center-extension-template';
 	const templatePath = __dirname.substring(0, __dirname.length - 3) + 'templates\\windows-admin-center-extension-template';
-	const upgradedTemplatePath = __dirname.substring(0, __dirname.length - 3) + 'templates\\upgrade\\windows-admin-center-extension-template';
 	const manifestTemplatePath = __dirname.substring(0, __dirname.length - 3) + 'templates\\manifest';
 
 	if (pathExists.sync(primary)) {
@@ -60,10 +60,10 @@ function create(type, company, primary, secondary, version) {
 		console.log(productPath);
 		fse.mkdirSync(primary);
 
-		if (version !== 'experimental' && version !== 'next' && version !== 'insider') {
-			fse.copySync(templatePath, productPath);
+		if (version === 'legacy') {
+			fse.copySync(legacyTemplatePath, productPath);
 		} else {
-			fse.copySync(upgradedTemplatePath, productPath);
+			fse.copySync(templatePath, productPath);
 		}
 
 		fse.copyFileSync(ignoresPath + '\\git', productPath + '\\.gitignore');
@@ -77,12 +77,12 @@ function create(type, company, primary, secondary, version) {
 			fse.copyFileSync(manifestTemplatePath + '\\solution-manifest.json', productPath + '\\src\\manifest.json');
 		}
 
-		updateFiles(productPath, company, primary, secondary, version);
+		updateFiles(company, primary, secondary, version);
 		printOutro(primary);
 	}
 }
 
-function updateFiles(path, company, primary, secondary, version) {
+function updateFiles(company, primary, secondary, version) {
 	/* 
 	/ files that need updating:
 	/	root package.json
@@ -96,7 +96,8 @@ function updateFiles(path, company, primary, secondary, version) {
 	let manifestFilePath = './' + primary + '/src/manifest.json';
 	let mainFilePath = './' + primary + '/src/main.ts';
 	let stringsFilePath = './' + primary + '/src/resources/strings/strings.resjson';
-	let gulpFilePath = './' + primary + '/gulpfile.js';
+	let gulpFilePath = './' + primary + '/gulpfile.ts/config-data.ts';
+	let e2eSpecFilePath = './' + primary + '/e2e/specs/app.e2e-spec.ts';
 
 	let packageName = '@' + company.toLowerCase() + '/' + primary.toLowerCase();
 	let manifestName = company.toLowerCase() + '.' + primary.toLowerCase();
@@ -105,27 +106,30 @@ function updateFiles(path, company, primary, secondary, version) {
 	let companyPackageIdentifier = company.split('-').join('') + primary.split('-').join('');
 	
 	/*
+	/ Default version is 'legacy' in legacy/windows-admin-center-extension-template/package.json
 	/ Default version is 'latest' in windows-admin-center-extension-template/package.json
-	/ Default version is 'insider' in upgrade/windows-admin-center-extension-template/package.json
-	/ Only change default versions when on 'next' or 'experimental' while two versions of template extension exist
 	*/
-	if (version === 'next' || version === 'experimental') {
-		let existingVersion = '"@microsoft/windows-admin-center-sdk": "insider",';
+	if (version === 'next' || version === 'insider' || version === 'experimental') {
+		let existingVersion = '"@microsoft/windows-admin-center-sdk": "latest",';
 		cleanDirectory[rootPackagePath] = {
 			'@{!company-name}/{!product-name}': packageName,
-			'"@microsoft/windows-admin-center-sdk": "insider",': existingVersion.replace('insider', version)
+			'"@microsoft/windows-admin-center-sdk": "latest",': existingVersion.replace('latest', version)
 		};
-	}
-	else {
+	} else {
 		cleanDirectory[rootPackagePath] = { '@{!company-name}/{!product-name}': packageName };
 	}
 
-	if (version === 'experimental') {
+	if (version !== 'legacy') {
 		cleanDirectory[gulpFilePath] = {
 			'{!company-name}.{!module-name}': manifestName,
+			'{!CompanyName}{!ProductName}': stringsCompany + stringsProduct,
 			'{!guid}': uuidv4(),
 			'{!company-package-id}': companyPackageIdentifier
 		};
+
+		cleanDirectory[e2eSpecFilePath] = {
+			'{!product-title}': stringsProduct
+		}
 	}
 
 	cleanDirectory[manifestFilePath] = {
@@ -181,7 +185,7 @@ function normalizeString(input) {
 }
 
 function isValidVersion(version) {
-	return version === 'latest' || version === 'next' || version === 'insider' || version === 'release' || version === '' || version === 'experimental';
+	return version === 'legacy' || version === 'latest' || version === 'next' || version === 'insider' || version === 'release' || version === '' || version === 'experimental';
 }
 
 // this came from here: https://gist.github.com/jed/982883

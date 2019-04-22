@@ -21,11 +21,13 @@ You can also use the CLI to create solution extensions as well:
 wac create --company Microsoft --tool Foo --solution MySolution
 ```
 
-In addition to creating extensions, you can specify which version of the SDK you want to utilize.  There are 3 rings for you to choose from:
+In addition to creating extensions, you can specify which version of the SDK you want to utilize.  There are 5 rings for you to choose from:
 
+* legacy (the GA release behind the current, 2 updates per year)
 * latest (the most current GA release, 2 updates per year)
 * insider (build most recently released to Insiders.  Updates monthly)
 * next (current dev build.  Updates frequently, up to weekly)
+* experimental (Updates frequently, up to daily)
 
 In order to specify which SDK version you want to use, add the version tag to the create command:
 
