@@ -9,13 +9,7 @@ module LintModule {
             .pipe(tslint.report({ 'emitError': true, 'reportLimit': 0, 'summarizeFailureOutput': true }));
     }
 
-    export function lintE2e() {
-        return src(['e2e/**/*.ts'])
-            .pipe(tslint())
-            .pipe(tslint.report({ 'emitError': true, 'reportLimit': 0, 'summarizeFailureOutput': true }));
-    }
-
-    export const lint = series(lintApp, lintE2e);
+    export const lint = lintApp;
 }
 
 Utilities.exportFunctions(exports, LintModule);

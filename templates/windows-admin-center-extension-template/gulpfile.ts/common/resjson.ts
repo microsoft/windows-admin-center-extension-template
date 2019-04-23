@@ -26,7 +26,7 @@ module ResjsonModule {
     }
 
     function mergeLocalizedJson(): any {
-        return src(['./node_modules/@microsoft/windows-admin-center-sdk/**/assets/strings', '!./node_modules/@microsoft/windows-admin-center-sdk/e2e/assets/strings'])
+        return src(['./node_modules/@microsoft/windows-admin-center-sdk/**/assets/strings'])
             .pipe(gulpMergeJsonInFolders({ src: './src/assets/strings' }))
             .pipe(dest('src/assets/strings'));
     }
