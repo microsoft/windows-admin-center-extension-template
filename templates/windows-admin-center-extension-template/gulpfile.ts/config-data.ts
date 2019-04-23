@@ -17,6 +17,9 @@ function gulpConfig(): Config {
             ],
             enablePester: false,
             skipCim: true
+        },
+        test: {
+            skip: true
         }
     };
 }

@@ -126,11 +126,12 @@ function updateFiles(company, primary, secondary, version) {
 			'{!guid}': uuidv4(),
 			'{!company-package-id}': companyPackageIdentifier
 		};
-
+	} else {
 		cleanDirectory[e2eSpecFilePath] = {
 			'{!product-title}': stringsProduct
 		}
 	}
+
 
 	cleanDirectory[manifestFilePath] = {
 		'{!company-name}.{!module-name}': manfiestName,

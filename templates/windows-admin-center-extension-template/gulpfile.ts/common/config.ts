@@ -64,4 +64,7 @@ export interface Config {
          */
         skipManifest?: boolean;
     };
+    test?: {
+        skip: boolean;
+    };
 }

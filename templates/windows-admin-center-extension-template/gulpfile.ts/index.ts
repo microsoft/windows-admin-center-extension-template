@@ -11,7 +11,6 @@ const validateModule = require('./common/validate');
 const compileModule = require('./common/compile');
 const copyModule = require('./common/copy');
 const testModule = require('./common/test');
-const e2eModule = require('./common/e2e');
 
 module IndexModule {
     // Export tasks
@@ -20,7 +19,7 @@ module IndexModule {
     export const lintApp = lintModule.lintApp;
     export const validate = validateModule.validate;
     export const resjson = resjsonModule.resjson;
-    export const powershell = powershellModule.powershell;
+    export const powershell = config.powershell.skip ? function powershellSkip(cb) { cb(); } : powershellModule.powershell;
     export const copy = copyModule.copyApp;
     export const inlineDist = copyModule.inlineDist;
     export const inlineSource = compileModule.inlineSource;
@@ -29,14 +28,10 @@ module IndexModule {
     export const serveApp = compileModule.serveApp;
     export const ut = testModule.unitTestApp;
     export const pester = testModule.pester;
-    export const test = testModule.test;
-    export const e2eLint = lintModule.lintE2e;
-    export const e2eBuild = e2eModule.e2eBuild;
-    export const e2eRun = e2eModule.e2eRun;
-    export const e2e = e2eModule.e2e;
+    export const test = config.test && config.test.skip ? function skipTest(cb) {cb();}: testModule.test;
 
     // Build Tasks
-    export const generate = config.powershell.skip ? resjson : parallel(resjson, powershell);
+    export const generate = parallel(resjson, powershell);
     export const compile = series(inlineSource, inlineCompile, inlineDist);
     export const app = series(lintApp, bundleApp, copy);
     export const build = series(clean, generate, validate, lint, compile, copy, test, app);
@@ -51,7 +46,3 @@ module IndexModule {
 }
 
 Utilities.exportFunctions(exports, IndexModule);
-
-// aliases
-task('e2e-build', exports.e2eBuild);
-task('e2e-run', exports.e2eRun);

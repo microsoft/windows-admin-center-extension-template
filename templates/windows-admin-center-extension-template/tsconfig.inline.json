@@ -34,7 +34,6 @@
       "inlineSrc/public_api.ts",
       "inlineSrc/test.ts",
       "src",
-      "e2e",
       "bundle",
       "index.d.ts",
       "**/*.spec.ts",
