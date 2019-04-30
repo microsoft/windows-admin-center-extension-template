@@ -50,7 +50,7 @@ function copyNewFiles() {
     fse.copyFileSync(ignoresPath + '\\git', '.\\.gitignore');
     fse.copyFileSync(ignoresPath + '\\npm', '.\\.npmignore');
     fse.copyFileSync(upgradedTemplatePath + '\\tslint.json', '.\\tslint.json');
-    fse.copyFileSync(upgradedTemplatePath + '\\gulpfile.js', '.\\gulpfile.js');
+    fse.copySync(upgradedTemplatePath + '\\gulpfile.ts', '.\\gulpfile.ts');
     fse.copyFileSync(upgradedTemplatePath + '\\tsconfig.json', '.\\tsconfig.json');
     fse.copyFileSync(upgradedTemplatePath + '\\angular.json', '.\\angular.json');
     fse.copyFileSync(upgradedTemplatePath + '\\tsconfig.inline.json', '.\\tsconfig.inline.json');
@@ -137,6 +137,13 @@ function writePackageJsonUpdate() {
         console.log(updates[i]);
         updateSource.push(updates[i]  + '\n');
     }
+
+
+    console.log('\n')
+    console.log('Any gulp configuration will need to be moved from gulpfile.js to gulpfile.ts/index.ts. gulpfile.js will then need to be deleted.');
+    updateSource.push('\n')
+    updateSource.push('Any gulp configuration will need to be moved from gulpfile.js to gulpfile.ts/index.ts gulpfile.js will then need to be deleted.');
+
 }
 
 async function searchFolder(folderPath) {
