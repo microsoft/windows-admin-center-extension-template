@@ -45,7 +45,7 @@ function finalize() {
 
 function copyNewFiles() {
     let ignoresPath = __dirname.substring(0, __dirname.length - 3) + 'templates\\ignores';
-    let upgradedTemplatePath = __dirname.substring(0, __dirname.length - 3) + 'templates\\upgrade\\windows-admin-center-extension-template';
+    let upgradedTemplatePath = __dirname.substring(0, __dirname.length - 3) + 'templates\\windows-admin-center-extension-template';
 
     fse.copyFileSync(ignoresPath + '\\git', '.\\.gitignore');
     fse.copyFileSync(ignoresPath + '\\npm', '.\\.npmignore');
