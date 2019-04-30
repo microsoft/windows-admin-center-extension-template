@@ -140,9 +140,9 @@ function writePackageJsonUpdate() {
 
 
     console.log('\n')
-    console.log('Any gulp configuration will need to be moved from gulpfile.js to gulpfile.ts/index.ts. gulpfile.js will then need to be deleted.');
+    console.log('Any gulp configuration will need to be moved from gulpfile.js to gulpfile.ts/index.ts. gulpfile.js and the gulps folder will then need to be deleted.');
     updateSource.push('\n')
-    updateSource.push('Any gulp configuration will need to be moved from gulpfile.js to gulpfile.ts/index.ts gulpfile.js will then need to be deleted.');
+    updateSource.push('Any gulp configuration will need to be moved from gulpfile.js to gulpfile.ts/index.ts gulpfile.js and the gulps folder will then need to be deleted.');
 
 }
 
