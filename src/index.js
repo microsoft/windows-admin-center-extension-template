@@ -100,7 +100,7 @@ function updateFiles(company, primary, secondary, version) {
 	let e2eSpecFilePath = './' + primary + '/e2e/specs/app.e2e-spec.ts';
 
 	let packageName = '@' + company.toLowerCase() + '/' + primary.toLowerCase();
-	let manfiestName = company.toLowerCase() + '.' + primary.toLowerCase();
+	let manifestName = company.toLowerCase() + '.' + primary.toLowerCase();
 	let stringsProduct = primary.split('-').join(''); // Strings file cannot handle dashes.
 	let stringsCompany = company.split('-').join('');
 	let companyPackageIdentifier = company.split('-').join('') + primary.split('-').join('');
@@ -121,8 +121,8 @@ function updateFiles(company, primary, secondary, version) {
 
 	if (version !== 'legacy') {
 		cleanDirectory[gulpFilePath] = {
+			'{!company-name}.{!module-name}': manifestName,
 			'{!CompanyName}{!ProductName}': stringsCompany + stringsProduct,
-			'{!company-name}.{!module-name}': manfiestName,
 			'{!guid}': uuidv4(),
 			'{!company-package-id}': companyPackageIdentifier
 		};
@@ -134,8 +134,8 @@ function updateFiles(company, primary, secondary, version) {
 
 
 	cleanDirectory[manifestFilePath] = {
-		'{!company-name}.{!module-name}': manfiestName,
-		'{!company-name}.{!product-name}': manfiestName,
+		'{!company-name}.{!module-name}': manifestName,
+		'{!company-name}.{!product-name}': manifestName,
 		'{!primary-display-name}': primary,
 		'{!primary-url-name}': primary.toLowerCase(),
 		'{!secondary-display-name}': secondary,
@@ -149,7 +149,7 @@ function updateFiles(company, primary, secondary, version) {
 		'{!CompanyName}': stringsCompany
 	};
 
-	cleanDirectory[mainFilePath] = { '{!company-name}.{!product-name}': manfiestName };
+	cleanDirectory[mainFilePath] = { '{!company-name}.{!product-name}': manifestName };
 
 	for (var key in cleanDirectory) {
 		cleanFile(key, cleanDirectory[key]);
