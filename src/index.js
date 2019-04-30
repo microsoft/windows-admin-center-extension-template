@@ -97,7 +97,6 @@ function updateFiles(company, primary, secondary, version) {
 	let mainFilePath = './' + primary + '/src/main.ts';
 	let stringsFilePath = './' + primary + '/src/resources/strings/strings.resjson';
 	let gulpFilePath = './' + primary + '/gulpfile.ts/config-data.ts';
-	let e2eSpecFilePath = './' + primary + '/e2e/specs/app.e2e-spec.ts';
 
 	let packageName = '@' + company.toLowerCase() + '/' + primary.toLowerCase();
 	let manfiestName = company.toLowerCase() + '.' + primary.toLowerCase();
@@ -126,10 +125,6 @@ function updateFiles(company, primary, secondary, version) {
 			'{!guid}': uuidv4(),
 			'{!company-package-id}': companyPackageIdentifier
 		};
-	} else {
-		cleanDirectory[e2eSpecFilePath] = {
-			'{!product-title}': stringsProduct
-		}
 	}
 
 

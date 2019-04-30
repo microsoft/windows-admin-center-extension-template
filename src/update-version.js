@@ -152,7 +152,7 @@ async function searchFolder(folderPath) {
 
 function isValidDirectory(path) {
     if (path.indexOf('node_modules') >= 0 || path.indexOf('bundle') >= 0 || path.indexOf('dist') >= 0
-        || path.indexOf('inlineDist') >= 0 || path.indexOf('inlineSrc') >= 0 || path.indexOf('e2e') >= 0
+        || path.indexOf('inlineDist') >= 0 || path.indexOf('inlineSrc') >= 0
         || path.indexOf('gulps') >= 0 || path.indexOf('UpgradeAudit') >= 0) {
         return false;
     }
