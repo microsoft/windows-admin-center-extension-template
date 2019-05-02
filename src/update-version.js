@@ -50,7 +50,7 @@ function copyNewFiles() {
     fse.copyFileSync(ignoresPath + '\\git', '.\\.gitignore');
     fse.copyFileSync(ignoresPath + '\\npm', '.\\.npmignore');
     fse.copyFileSync(upgradedTemplatePath + '\\tslint.json', '.\\tslint.json');
-    fse.copyFileSync(upgradedTemplatePath + '\\gulpfile.js', '.\\gulpfile.js');
+    fse.copySync(upgradedTemplatePath + '\\gulpfile.ts', '.\\gulpfile.ts');
     fse.copyFileSync(upgradedTemplatePath + '\\tsconfig.json', '.\\tsconfig.json');
     fse.copyFileSync(upgradedTemplatePath + '\\angular.json', '.\\angular.json');
     fse.copyFileSync(upgradedTemplatePath + '\\tsconfig.inline.json', '.\\tsconfig.inline.json');
@@ -137,6 +137,13 @@ function writePackageJsonUpdate() {
         console.log(updates[i]);
         updateSource.push(updates[i]  + '\n');
     }
+
+
+    console.log('\n')
+    console.log('Any gulp configuration will need to be moved from gulpfile.js to gulpfile.ts/index.ts. gulpfile.js and the gulps folder will then need to be deleted.');
+    updateSource.push('\n')
+    updateSource.push('Any gulp configuration will need to be moved from gulpfile.js to gulpfile.ts/index.ts gulpfile.js and the gulps folder will then need to be deleted.');
+
 }
 
 async function searchFolder(folderPath) {
@@ -152,7 +159,7 @@ async function searchFolder(folderPath) {
 
 function isValidDirectory(path) {
     if (path.indexOf('node_modules') >= 0 || path.indexOf('bundle') >= 0 || path.indexOf('dist') >= 0
-        || path.indexOf('inlineDist') >= 0 || path.indexOf('inlineSrc') >= 0 || path.indexOf('e2e') >= 0
+        || path.indexOf('inlineDist') >= 0 || path.indexOf('inlineSrc') >= 0
         || path.indexOf('gulps') >= 0 || path.indexOf('UpgradeAudit') >= 0) {
         return false;
     }
