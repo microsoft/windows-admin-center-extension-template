@@ -1,8 +1,8 @@
-//
+ //
 //
 const fse = require('fs-extra');
 const { resolve } = require('path');
-const { readdir, stat } = require('fs').promises;
+const { readdir, stat } = require('fs').promises || {};
 const fs = require('fs');
 
 let updateCount = 0;
