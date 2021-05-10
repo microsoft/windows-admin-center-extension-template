@@ -4,34 +4,98 @@ const fse = require('fs-extra');
 const { resolve } = require('path');
 const { readdir, stat } = require('fs').promises;
 const fs = require('fs');
+const exec = require('child_process').exec;
 
 let updateCount = 0;
 let updateSource = [];
 
 module.exports = {
     update: function (audit, rootPath) {
-        searchFolder(rootPath)
-            .then(results => {
-                for (var file in results) {
-                    searchFile(results[file], audit);
-                }
+        updatePackages(rootPath, audit);
+        copyNewFiles(audit);
+        parseLintErrors(audit, (results) => {
+            console.log(results);
 
-                if (!audit) {
-                    copyNewFiles();
-                }
+            // searchFolder(rootPath)
+            // .then(results => {
+            //     for (var file in results) {
+            //         searchFile(results[file], audit);
+            //     }
 
-                writePackageJsonUpdate();
+            //     console.log('');
 
-                console.log('');
-                var lintMessage = 'It is advisable to run \'ng lint --fix\' to automate the fixing of some new linting rules.';
-                console.log(lintMessage);
-                updateSource.push('\n');
-                updateSource.push(lintMessage + '\n');
-                console.log('');
-
-                finalize();
-            });
+            //     finalize();
+            // });
+        });
     }
+}
+
+function parseLintErrors(audit, callback) {
+    // If audit is true, run without --fix flag
+    let cmd = audit ? 'ng lint' : 'ng lint --fix';
+
+    console.log('Linting, please wait...')
+    exec(cmd, (error, stdout, stderr) => {
+        stdout = stdout + "\nC:/";
+        console.log('stdout: ' + stdout);
+        // console.log('stderr: ' + stderr);
+        // if (error !== null) {
+        //     console.log('exec error: ' + error);
+        // }
+    
+        const captureAll = /[\s\S]+?(?=\w+:\/)/g;
+        const captureFilePath = /(.+)(?=:\d+:\d+)/;
+        const captureErrorPosition = /(?<=ERROR: )(\d+:\d+)/g; // Format: "lineNumber:characterNumber"
+        const captureErrorType = /(?<=ERROR: \d+:\d+\s+)\S+/g;
+        const captureErrorMessage = /(?<=ERROR: \d+:\d+\s+\S+\s+)\S.+/g;
+    
+        const lintOutputByFile = stdout.match(captureAll);
+        
+        const results = [];
+        for (const file in lintOutputByFile) {
+            const filePath = file.match(captureFilePath);
+
+            // If no file path found, this match doesn't contain errors
+            if (!filePath || filePath.length === 0) {
+                continue;
+            }
+
+            console.log(`File path: ${filePath[0]}`);
+    
+            const errorPositionStrings = file.match(captureErrorPosition);
+    
+            // If there are no linter errors in the current file, skip to the next
+            if (!errorPositionStrings || errorPositionStrings.length === 0) {
+                continue;
+            }
+
+            console.log(`Error position strings: ${errorPositionStrings}`)
+    
+            const errorPositions = errorPositionStrings.map((value) => {
+                const splitValues = value.split(':');
+                return { line: splitValues[0], char: splitValues[1] } // TODO: If reading line by line, char by char, subtract 1 from this to 0 index
+            });
+    
+            const errorTypes = file.match(captureErrorType);
+            const errorMessages = file.match(captureErrorMessage);
+    
+            const errors = []
+            for (let i = 0; i < errorPositions.length; i++) {
+                errors.push({
+                    position: errorPositions[i],
+                    type: errorTypes[i],
+                    message: errorMessages[i]
+                });
+            }
+    
+            results.push({
+                filePath: filePath[0],
+                errors: errors
+            });
+        }
+
+        callback(results);
+    });
 }
 
 function finalize() {
@@ -43,7 +107,11 @@ function finalize() {
     console.log('|==========================================================|')
 }
 
-function copyNewFiles() {
+function copyNewFiles(audit) {
+    if (audit) {
+        return;
+    }
+
     let ignoresPath = __dirname.substring(0, __dirname.length - 3) + 'templates\\ignores';
     let upgradedTemplatePath = __dirname.substring(0, __dirname.length - 3) + 'templates\\windows-admin-center-extension-template';
 
@@ -51,12 +119,14 @@ function copyNewFiles() {
     fse.copyFileSync(ignoresPath + '\\npm', '.\\.npmignore');
     fse.copyFileSync(upgradedTemplatePath + '\\tslint.json', '.\\tslint.json');
     fse.copySync(upgradedTemplatePath + '\\gulpfile.ts', '.\\gulpfile.ts');
+    fse.copyFileSync(upgradedTemplatePath + '\\tsconfig.base.json', '.\\tsconfig.base.json');
     fse.copyFileSync(upgradedTemplatePath + '\\tsconfig.json', '.\\tsconfig.json');
     fse.copyFileSync(upgradedTemplatePath + '\\angular.json', '.\\angular.json');
     fse.copyFileSync(upgradedTemplatePath + '\\tsconfig.inline.json', '.\\tsconfig.inline.json');
     fse.copyFileSync(upgradedTemplatePath + '\\src\\tsconfig.app.json', '.\\src\\tsconfig.app.json');
     fse.copyFileSync(upgradedTemplatePath + '\\src\\tsconfig.spec.json', '.\\src\\tsconfig.spec.json');
     fse.copyFileSync(upgradedTemplatePath + '\\src\\polyfills.ts', '.\\src\\polyfills.ts');
+    fse.copyFileSync(upgradedTemplatePath + '\\src\\karma.conf.js', '.\\src\\karma.conf.js');
 
     if(fse.existsSync('.\\tsconfig-inline.json')) {
         fs.unlinkSync('.\\tsconfig-inline.json');
@@ -66,84 +136,80 @@ function copyNewFiles() {
         fs.unlinkSync('.\\package-lock.json');
     }
 
+    if(fse.existsSync('.\\node_modules')) {
+        fse.rmdirSync('.\\node_modules');
+    }
+
     console.log('All new config and json files have been transferred.');
 }
 
-function writePackageJsonUpdate() {
-    // todo: read this from the package.json
-    let updates = [
-    '"@microsoft/windows-admin-center-sdk": "next"',
-    '"@angular/animations": "7.1.1"',
-    '"@angular/common": "7.1.1"',
-    '"@angular/compiler": "7.1.1"',
-    '"@angular/core": "7.1.1"',
-    '"@angular/forms": "7.1.1"',
-    '"@angular/language-service": "7.1.1"',
-    '"@angular/platform-browser": "7.1.1"',
-    '"@angular/platform-browser-dynamic": "7.1.1"',
-    '"@angular/router": "7.1.1"',
-    '"core-js": "2.6.0"',
-    '"rxjs": "6.3.3"',
-    '"zone.js": "0.8.26"',
-    '"@angular-devkit/build-angular": "^0.12.1"',
-    '"@angular-devkit/build-ng-packagr": "0.11.2"',
-    '"@angular/animations": "7.1.1"',
-    '"@angular/cli": "7.1.2"',
-    '"@angular/common": "7.1.1"',
-    '"@angular/compiler": "7.1.1"',
-    '"@angular/compiler-cli": "7.1.1"',
-    '"@angular/core": "7.1.1"',
-    '"@angular/forms": "7.1.1"',
-    '"@angular/language-service": "7.1.1"',
-    '"@angular/platform-browser": "7.1.1"',
-    '"@angular/platform-browser-dynamic": "7.1.1"',
-    '"@angular/router": "7.1.1"',
-    '"@types/chart.js": "2.7.40"',
-    '"@types/jasmine": "~2.8.8"',
-    '"@types/jasminewd2": "~2.0.3"',
-    '"@types/node": "8.9.5"',
-    '"ajv": "6.4.0"',
-    '"codelyzer": "4.5.0"',
-    '"core-js": "2.6.0"',
-    '"gulp": "^3.9.1"',
-    '"gulp-inline-ng2-template": "5.0.1"',
-    '"jasmine-core": "~2.99.1"',
-    '"jasmine-spec-reporter": "~4.2.1"',
-    '"karma": "^3.1.4"',
-    '"karma-jasmine": "~1.1.2"',
-    '"karma-remap-istanbul": "^0.6.0"',
-    '"ng-packagr": "4.4.0"',
-    '"readline-sync": "1.4.9"',
-    '"rxjs": "6.3.3"',
-    '"rxjs-tslint": "^0.1.5"',
-    '"rxjs-tslint-rules": "4.10.0"',
-    '"signalr": "2.3.0"',
-    '"ts-node": "1.2.1"',
-    '"tsickle": "0.33.1"',
-    '"tslint": "5.11.0"',
-    '"tslint-consistent-codestyle": "1.14.0"',
-    '"tslint-eslint-rules": "5.4.0"',
-    '"tslint-microsoft-contrib": "5.2.1"',
-    '"typescript": "3.1.6"',
-    '"zone.js": "0.8.26"'
-    ];
-
-    console.log('');
-    console.log('The following updates need to be made in your package.json file (if they haven\'t already been made):');
-    updateSource.push('\n')
-    updateSource.push('The following updates need to be made in your package.json file (if they haven\'t already been made):');
-
-    for(var i in updates) {
-        console.log(updates[i]);
-        updateSource.push(updates[i]  + '\n');
+function updatePackages(rootPath, audit) {
+    if (!audit) {
+        console.log('Beginning package update.');
+    } else {
+        console.log('Beginning package update audit.')
     }
 
+    const packageFile = rootPath + "\\package.json";
+    const templatePackageFile = __dirname.substring(0, __dirname.length - 3) + 'templates\\windows-admin-center-extension-template\\package.json';
 
-    console.log('\n')
-    console.log('Any gulp configuration will need to be moved from gulpfile.js to gulpfile.ts/index.ts. gulpfile.js and the gulps folder will then need to be deleted.');
-    updateSource.push('\n')
-    updateSource.push('Any gulp configuration will need to be moved from gulpfile.js to gulpfile.ts/index.ts gulpfile.js and the gulps folder will then need to be deleted.');
+    const templatePackages = readFileJSON(templatePackageFile);
 
+    if (templatePackages === null) {
+        console.log(`An unexpected error occurred, template package file does not exist. Please verify file exists at path ${templatePackageFile}`);
+        return;
+    }
+
+    const templatePeerDependencies = templatePackages.peerDependencies;
+    const templateDevDependencies = templatePackages.devDependencies;
+
+    // Use equality operator instead of strict equality operator to check for null or undefined
+    if (templatePeerDependencies == null || templateDevDependencies == null) {
+        console.log(`An unexpected error occurred, template package file is malformed. Please verify file at path ${templatePackageFile} has both "peerDependencies" and "devDependencies" defined.`)
+    }
+
+    let packages = readFileJSON(packageFile);
+
+    if (packages === null) {
+        console.log(`No existing package file exists, creating new package file at path ${packageFile}.`)
+        fs.copyFileSync(templatePackageFile, packageFile);
+        return;
+    }
+
+    if (packages.peerDependencies == null) {
+        packages.peerDependencies = {};
+    }
+
+    if (packages.devDependencies == null) {
+        packages.devDependencies = {};
+    }
+
+    let peerDependencies = packages.peerDependencies;
+    let devDependencies = packages.devDependencies;
+
+    updatePackageObject(templatePeerDependencies, peerDependencies);
+    updatePackageObject(templateDevDependencies, devDependencies);
+
+    updateSource.push('\n');
+
+    if (!audit) {
+        console.log('Finished updating packages, writing to file.');
+        fse.writeJSONSync(packageFile, packages, { spaces: 2 });
+    } else {
+        console.log('Finished audit of package update.')
+    }
+}
+
+function updatePackageObject(sourceObject, targetObject) {
+    for (const package in sourceObject) {
+        if (Object.prototype.hasOwnProperty.call(sourceObject, package)) {
+            const message = `Package '${package}' will go to version ${targetObject[package]}`;
+            console.log(message);
+            updateSource.push(message + '\n');
+
+            targetObject[package] = sourceObject[package];
+        }
+    }
 }
 
 async function searchFolder(folderPath) {
@@ -167,7 +233,113 @@ function isValidDirectory(path) {
     return true;
 }
 
-function searchFile(filePath, audit) {
+// function replaceOrAddInFile(filePath, regexToReplace, package) {
+//     const fileData = readFileData(filePath)
+//     const json = readFileJSON(filePath);
+
+//     console.log(json);
+
+//     if (!fileData) {
+//         // TODO: Add logging for fail case
+//         return;
+//     }
+
+//     let result;
+
+//     if (!fileData.match(regexToReplace)) {
+//         result = addInString(
+//             fileData,
+//             new RegExp(`(?<="${package.location}":\\s*){`, 'g'),
+//             1,
+//             `\n\t\t"${package.name}": "${package.version}",`);
+//     } else {
+//         result = replaceInString(fileData, regexToReplace, `"${package.version}"`);
+//     }
+
+//     fse.writeFileSync(result);
+// }
+
+// function replaceInFile(filePath, regexToReplace, newString) {
+//     const fileData = readFileData(filePath)
+
+//     if (!fileData) {
+//         return;
+//     }
+
+//     const result = replaceInString(fileData, regexToReplace, newString);
+//     fse.writeFileSync(result);
+// }
+
+function executeReplaceOperations(filePath, errors) {
+    let fileData = readFileData(filePath);
+
+    if (!fileData) {
+        console.log(`Couldn't retrieve file data for path ${filePath}. Please verify this path is valid.`);
+        return;
+    }
+
+    // error = { position, type, message }
+    for (const error of errors) {
+        // TODO: Determine regex to use
+        // Determine what to replace
+        // Replace or log in audit
+        // Perform replace on fileData, store result back into fileData. Also make sure to log in audit
+    }
+
+    fse.writeFileSync(filePath, fileData);
+}
+
+function readFileData(filePath) {
+    if (!fs.statSync(filePath).isDirectory()) {
+        if (!fse.existsSync(filePath)) {
+            return null;
+        }
+
+        return fse.readFileSync(filePath, 'utf8');
+    }
+
+    return null;
+}
+
+function readFileJSON(filePath) {
+    if (!fs.statSync(filePath).isDirectory()) {
+        if (!fse.existsSync(filePath)) {
+            return null;
+        }
+
+        return fse.readJSONSync(filePath);
+    }
+
+    return null;
+}
+
+/**
+ * Inserts newString into originalString at location of the indexRegex. Returns null if no regex match is found.
+ * @param {string} originalString Original string to modify.
+ * @param {RegExp} indexRegex Regex used to determine location of string insertion.
+ * @param {number} captureLength Length of indexRegex capture. Used to place newString at end of given regex.
+ * @param {string} newString String to insert.
+ * @returns Modified string if successful, original string otherwise.
+ */
+// function addInString(originalString, indexRegex, captureLength, newString) {
+//     const position = originalString.search(indexRegex);
+
+//     if (position === -1) {
+//         console.log()
+//         return originalString;
+//     }
+
+//     const firstSlice = fileData.slice(0, position + captureLength);
+//     const secondSlice = fileData.slice(position + captureLength);
+
+//     return firstSlice + newString + secondSlice;
+// }
+
+function replaceInString(originalString, regexToReplace, newString) {
+    return originalString.replace(regexToReplace, newString);
+}
+
+function searchFile(filePath) {
     if (!fs.statSync(filePath).isDirectory()) {
         if (!fse.existsSync(filePath)) {
             return;
@@ -175,7 +347,6 @@ function searchFile(filePath, audit) {
 
         let actions = buildElements();
         let fileData = fse.readFileSync(filePath, 'utf8');
-        let editActions = {};
 
         for (var actionKey in actions) {
             let displayNameIndex = fileData.indexOf(actionKey);

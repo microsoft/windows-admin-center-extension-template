@@ -1,14 +1,21 @@
+import psCimModule from '@msft-sme/tools/gulp-ps-cim';
+import psCodeModule from '@msft-sme/tools/gulp-ps-code';
+import psManifestModule from '@msft-sme/tools/gulp-ps-manifest';
+import psModuleModule from '@msft-sme/tools/gulp-ps-module';
+import psResjsonModule from '@msft-sme/tools/gulp-ps-resjson';
+import { dest, series, src } from 'gulp';
+import { gulpConfig } from '../config-data';
 import { Config } from './config';
-const { dest, series, src } = require('gulp');
-const psCode = require('@microsoft/windows-admin-center-sdk/tools/gulp-ps-code');
-const psCim = require('@microsoft/windows-admin-center-sdk/tools/gulp-ps-cim');
-const psModule = require('@microsoft/windows-admin-center-sdk/tools/gulp-ps-module');
-const psResjson = require('@microsoft/windows-admin-center-sdk/tools/gulp-ps-resjson');
-const psManifest = require('@microsoft/windows-admin-center-sdk/tools/gulp-ps-manifest');
-const Utilities = require('./utilities');
-const config: Config = require('../config-data').gulpConfig();
 
-module PowerShellModule {
+export module PowerShellModule {
+    const config: Config = gulpConfig();
+
+    const psCim = psCimModule as any;
+    const psCode = psCodeModule as any;
+    const psManifest = psManifestModule as any;
+    const psModule = psModuleModule as any;
+    const psResjson = psResjsonModule as any;
+
     function powershellCim() {
         return src('src/powershell-cim-config.json')
             .pipe(psCim())
@@ -17,7 +24,11 @@ module PowerShellModule {
 
     function powershellCode() {
         return src(['src/resources/scripts/**/*.ps1', 'src/generated/scripts/**/*.ps1'])
-            .pipe(psCode({ powerShellModuleName: config.powershell.name }))
+            .pipe(psCode({
+                powerShellModuleName: config.powershell.name,
+                resourceName: config.powershell.skipResjson ? null : config.resjson.resourceName,
+                prefixName: config.powershell.prefixName
+            }))
             .pipe(dest('src/generated/'));
     }
 
@@ -34,8 +45,8 @@ module PowerShellModule {
 
     function powershellResjson() {
         return src(['src/resources/strings/strings.resjson', config.resjson.localePath + '/**/*.resjson'])
-            .pipe(psResjson({ resourceName: config.powershell.name }))
-            .pipe(dest('dist/packages/shell/dist/powershell-module/' + config.resjson.resourceName));
+            .pipe(psResjson({ resourceName: config.resjson.resourceName }))
+            .pipe(dest('dist/powershell-module/' + config.powershell.name));
     }
 
     function powershellManifest(): any {
@@ -65,5 +76,3 @@ module PowerShellModule {
 
     export const powershell = seriesArray.length === 1 ? powershellCode : series(seriesArray);
 }
-
-Utilities.exportFunctions(exports, PowerShellModule);

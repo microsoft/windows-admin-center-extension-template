@@ -1,8 +1,8 @@
-const values = require('yargs').argv;
-const childProcess = require('child_process');
-const log = require('fancy-log');
+import childProcess from 'child_process';
+import log from 'fancy-log';
+import { argv as values } from 'yargs';
 
-module Utilities {
+export module Utilities {
 
     function toBoolean(value: any, defaultValue: boolean = false) {
         return defaultValue ? value !== false : !!value;
@@ -21,7 +21,14 @@ module Utilities {
             core: toBoolean(values['core']),
             angular: toBoolean(values['angular']),
             app: toBoolean(values['app']),
-            devGuide: toBoolean(values['devguide'])
+            devGuide: toBoolean(values['devguide']),
+            version: values['version'],
+            icon: values['icon'],
+            license: values['license'],
+            company: values['company'],
+            copyright: values['copyright'],
+            iconUrl: values['iconUrl'],
+            targetPath: values['targetPath']
         };
     }
 
@@ -61,5 +68,3 @@ module Utilities {
 
     }
 }
-
-Utilities.exportFunctions(exports, Utilities);

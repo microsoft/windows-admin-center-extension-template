@@ -1,8 +1,6 @@
-const { dest, src } = require('gulp');
-const Utilities = require('./utilities');
+import { dest, src } from 'gulp';
 
-module CopyModule {
-
+export module CopyModule {
     export function copyApp(): any {
         return src(
             [
@@ -20,5 +18,3 @@ module CopyModule {
             .pipe(dest('dist'));
     }
 }
-
-Utilities.exportFunctions(exports, CopyModule);

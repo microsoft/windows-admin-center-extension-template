@@ -1,8 +1,7 @@
-const { src } = require('gulp');
-const gulpClean = require('gulp-clean');
-const Utilities = require('./utilities');
+import { src } from 'gulp';
+import gulpClean from 'gulp-clean';
 
-module CleanModule {
+export module CleanModule {
     export function clean(): any {
         return src(
             [
@@ -22,5 +21,3 @@ module CleanModule {
             .pipe(gulpClean({ force: true }));
     }
 }
-
-Utilities.exportFunctions(exports, CleanModule);

@@ -1,27 +1,23 @@
 
 import { Config } from './common/config';
 
-function gulpConfig(): Config {
+export function gulpConfig(): Config {
     return {
         resjson: {
-            resourceName: '{!CompanyName}{!ProductName}',
-            localeOffset: 0,
-            localePath: 'loc'
+            resourceName: 'MsftSmeFileExplorer',
+            localeOffset: 1,
+            localePath: 'loc/output'
         },
         powershell: {
-            name: '{!company-name}.{!module-name}',
-            guid: '{!guid}',
+            name: 'Microsoft.SME.FileExplorer',
+            guid: '5d7219a0-26a2-4a82-a273-d6f47227454b',
             list: [
                 'src',
-                'node_modules/@microsoft/windows-admin-center-sdk'
+                'node_modules/@msft-sme/core'
             ],
-            enablePester: false,
-            skipCim: true
-        },
-        test: {
-            skip: true
+            enablePester: true,
+            skipCim: true,
+            skipResjson: true
         }
     };
 }
-
-exports.gulpConfig = gulpConfig;

@@ -5,8 +5,8 @@ import {
     BrowserDynamicTestingModule,
     platformBrowserDynamicTesting
 } from '@angular/platform-browser-dynamic/testing';
-import { MsftSmeMock } from '@microsoft/windows-admin-center-sdk/core/base/msft-sme.mock';
-import { ConsoleMock } from '@microsoft/windows-admin-center-sdk/core/test-utilities/console.mock';
+import { MsftSmeMock } from '@msft-sme/core/base/msft-sme.mock';
+import { ConsoleMock } from '@msft-sme/core/test-utilities/console.mock';
 
 // Unfortunately there's no typing for the `__karma__` variable. Just declare it as any.
 declare var __karma__: any;
@@ -23,9 +23,12 @@ getTestBed().initTestEnvironment(
     platformBrowserDynamicTesting()
 );
 
+// Solution of 'Uncaught Error: Unable to access localized ResourcesString' error
+const strings = require('./assets/strings/strings.json');
+MsftSme.self().Resources = <MsftSme.MsftSmeResources>{ strings: strings.Strings };
+
 // Setup our mocks before all the tests run.
 beforeAll(() => {
-    const strings = require('./assets/strings/strings.json');
     MsftSmeMock.mockStrings(strings);
     MsftSmeMock.mockSelf();
     ConsoleMock.mockConsole();

@@ -1,11 +1,15 @@
+import testRunnerModule from '@msft-sme/tools/test-runner';
+import { parallel } from 'gulp';
+import { gulpConfig } from '../config-data';
 import { Config } from './config';
-const { dest, src } = require('gulp');
-const testRunner = require('@microsoft/windows-admin-center-sdk/tools/test-runner');
-const Utilities = require('./utilities');
-const argv = Utilities.gulpArgv();
-const config: Config = require('../config-data').gulpConfig();
+import { Utilities } from './utilities';
 
-module TestModule {
+export module TestModule {
+    const argv = Utilities.gulpArgv();
+    const config: Config = gulpConfig();
+
+    const testRunner = testRunnerModule as any;
+
     export function unitTestApp(cb, options: any = {}): void {
         const args = ['test'];
         if (argv['prod']) {
@@ -34,5 +38,3 @@ module TestModule {
 
     export const test = config.powershell.enablePester ? parallel(unitTestApp, pester) : unitTestApp;
 }
-
-Utilities.exportFunctions(exports, TestModule);

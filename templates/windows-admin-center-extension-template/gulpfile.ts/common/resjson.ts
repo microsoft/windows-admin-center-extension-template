@@ -1,12 +1,17 @@
+import manifestResourceModule from '@msft-sme/tools/gulp-manifest-resource';
+import gulpMergeJsonInFoldersModule from '@msft-sme/tools/gulp-merge-json-in-folders';
+import gulpResJsonModule from '@msft-sme/tools/gulp-resjson';
+import { dest, parallel, series, src } from 'gulp';
+import { gulpConfig } from '../config-data';
 import { Config } from './config';
-const { dest, parallel, series, src } = require('gulp');
-const gulpResJson = require('@microsoft/windows-admin-center-sdk/tools/gulp-resjson');
-const gulpMergeJsonInFolders = require('@microsoft/windows-admin-center-sdk/tools/gulp-merge-json-in-folders');
-const manifestResource = require('@microsoft/windows-admin-center-sdk/tools/gulp-manifest-resource');
-const Utilities = require('./utilities');
-const config: Config = require('../config-data').gulpConfig();
 
-module ResjsonModule {
+export module ResjsonModule {
+    const manifestResource = manifestResourceModule as any;
+    const gulpResJson = gulpResJsonModule as any;
+    const gulpMergeJsonInFolders = gulpMergeJsonInFoldersModule as any;
+
+    const config: Config = gulpConfig();
+
     function resjsonJson(): any {
         return src('src/resources/strings/**/*.resjson')
             .pipe(gulpResJson({ json: true }))
@@ -14,7 +19,7 @@ module ResjsonModule {
     }
 
     function resjsonJsonLocalized(): any {
-        return src(config.resjson.localePath +  '/**/*.resjson')
+        return src(config.resjson.localePath + '/**/*.resjson')
             .pipe(gulpResJson({ json: true, localeOffset: config.resjson.localeOffset }))
             .pipe(dest('./src/assets/strings'));
     }
@@ -26,7 +31,7 @@ module ResjsonModule {
     }
 
     function mergeLocalizedJson(): any {
-        return src(['./node_modules/@microsoft/windows-admin-center-sdk/**/assets/strings'])
+        return src(['./node_modules/@msft-sme/**/assets/strings', '!./node_modules/@msft-sme/e2e/assets/strings'])
             .pipe(gulpMergeJsonInFolders({ src: './src/assets/strings' }))
             .pipe(dest('src/assets/strings'));
     }
@@ -42,5 +47,3 @@ module ResjsonModule {
         parallel(mergeLocalizedJson, updateManifestResource)
     );
 }
-
-Utilities.exportFunctions(exports, ResjsonModule);

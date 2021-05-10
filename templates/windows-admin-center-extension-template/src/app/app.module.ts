@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
+import { RouterModule } from '@angular/router';
 import {
     AppContextService,
     AppErrorHandler,
@@ -11,6 +12,7 @@ import {
     IconModule,
     IdleModule,
     LoadingWheelModule,
+    NavigationService,
     ResourceService,
     SmeUxModule
 } from '@microsoft/windows-admin-center-sdk/angular';
@@ -32,9 +34,11 @@ import { AppComponent } from './app.component';
         LoadingWheelModule,
         GuidedPanelModule,
         IdleModule,
-        AppRoutingModule
+        AppRoutingModule,
+        RouterModule
     ],
     providers: [
+        NavigationService,
         ResourceService,
         {
             provide: ErrorHandler,

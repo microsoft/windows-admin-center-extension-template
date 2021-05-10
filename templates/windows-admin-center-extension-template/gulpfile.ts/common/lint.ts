@@ -1,15 +1,18 @@
-const { series, src } = require('gulp');
-const tslint = require('gulp-tslint');
-const Utilities = require('./utilities');
+import { series, src } from 'gulp';
+import tslint from 'gulp-tslint';
 
-module LintModule {
+export module LintModule {
     export function lintApp() {
         return src(['src/**/*.ts', '!src/generated/**/*.*'])
             .pipe(tslint())
             .pipe(tslint.report({ 'emitError': true, 'reportLimit': 0, 'summarizeFailureOutput': true }));
     }
 
-    export const lint = lintApp;
-}
+    export function lintE2e() {
+        return src(['e2e/**/*.ts'])
+            .pipe(tslint())
+            .pipe(tslint.report({ 'emitError': true, 'reportLimit': 0, 'summarizeFailureOutput': true }));
+    }
 
-Utilities.exportFunctions(exports, LintModule);
+    export const lint = series(lintApp, lintE2e);
+}

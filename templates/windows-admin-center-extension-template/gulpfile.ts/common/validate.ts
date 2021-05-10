@@ -1,13 +1,8 @@
-const { parallel, src } = require('gulp');
-const schemaForm = require('@microsoft/windows-admin-center-sdk/tools/gulp-schema-form');
-const manifestValidator = require('@microsoft/windows-admin-center-sdk/tools/gulp-manifest-validator');
-const Utilities = require('./utilities');
+import manifestValidatorModule from '@msft-sme/tools/gulp-manifest-validator';
+import { parallel, src } from 'gulp';
 
-module ValidateModule {
-    function schemaFormValidateResourceString() {
-        return src('src/**/*.ts')
-            .pipe(schemaForm());
-    }
+export module ValidateModule {
+    const manifestValidator = manifestValidatorModule as any;
 
     // special gulp task to test the manifest validation gulp tool.
     function testValidateManifests() {
@@ -15,7 +10,6 @@ module ValidateModule {
             .pipe(manifestValidator());
     }
 
-    export const validate = parallel(schemaFormValidateResourceString, testValidateManifests);
+    // export const validate = parallel(schemaFormValidateResourceString, testValidateManifests);
+    export const validate = parallel(testValidateManifests);
 }
-
-Utilities.exportFunctions(exports, ValidateModule);

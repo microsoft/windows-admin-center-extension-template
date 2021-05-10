@@ -63,8 +63,10 @@ export interface Config {
          * Skip the manifest resource generator.
          */
         skipManifest?: boolean;
-    };
-    test?: {
-        skip: boolean;
+
+        /**
+         * prefix name used to remove ambiguity in script naming.
+         */
+        prefixName?: string;
     };
 }

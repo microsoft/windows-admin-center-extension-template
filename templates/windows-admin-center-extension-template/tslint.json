@@ -1,4 +1,5 @@
 {
+  "extends": "tslint:recommended",
   "rulesDirectory": [
     "node_modules/codelyzer",
     "node_modules/rxjs-tslint",
@@ -7,17 +8,37 @@
     "node_modules/tslint-consistent-codestyle/rules"
   ],
   "rules": {
-    "rxjs-collapse-imports": true,
-    "rxjs-proper-imports": true,
-
+    "adjacent-overload-signatures": false,
+    "align": false,
+    "array-type": false,
+    "arrow-parens": false,
     "arrow-return-shorthand": true,
-    "callable-types": true,
+    "ban-types": false,
+    "callable-types": false,
     "class-name": true,
     "comment-format": [
       true,
       "check-space"
     ],
+    "component-class-suffix": true,
+    "component-selector": [
+      true,
+      "element",
+      "sme",
+      "kebab-case"
+    ],
+    "contextual-lifecycle": true,
     "curly": true,
+    "deprecation": {
+      "severity": "warning"
+    },
+    "directive-class-suffix": true,
+    "directive-selector": [
+      true,
+      "attribute",
+      "sme",
+      "camelCase"
+    ],
     "eofline": true,
     "forin": true,
     "import-blacklist": [
@@ -25,13 +46,18 @@
       "rxjs/Rx"
     ],
     "import-spacing": true,
-    "ordered-imports": true,
     "indent": [
       true,
       "spaces"
     ],
+    "interface-name": [
+      true,
+      "never-prefix"
+    ],
     "interface-over-type-literal": true,
+    "jsdoc-format": false,
     "label-position": true,
+    "max-classes-per-file": false,
     "max-line-length": [
       true,
       140
@@ -48,8 +74,18 @@
         ]
       }
     ],
+    "naming-convention": [
+      true,
+      {
+        "type": "enumMember",
+        "format": "PascalCase"
+      }
+    ],
+    "no-angle-bracket-type-assertion": false,
     "no-arg": true,
     "no-bitwise": true,
+    "no-conflicting-lifecycle": false,
+    "no-consecutive-blank-lines": false,
     "no-console": [
       true,
       "debug",
@@ -64,13 +100,23 @@
     "no-empty": false,
     "no-empty-interface": true,
     "no-eval": true,
+    "no-host-metadata-property": true,
     "no-inferrable-types": [
       true,
       "ignore-params"
     ],
+    "no-input-rename": true,
+    "no-inputs-metadata-property": true,
+    "no-internal-module": false,
     "no-misused-new": true,
+    "no-namespace": false,
     "no-non-null-assertion": true,
+    "no-output-native": false,
+    "no-output-on-prefix": true,
+    "no-output-rename": true,
+    "no-outputs-metadata-property": true,
     "no-redundant-jsdoc": true,
+    "no-reference": false,
     "no-shadowed-variable": true,
     "no-string-literal": false,
     "no-string-throw": true,
@@ -79,6 +125,8 @@
     "no-unnecessary-initializer": true,
     "no-unused-expression": true,
     "no-var-keyword": true,
+    "no-var-requires": false,
+    "object-literal-key-quotes": false,
     "object-literal-sort-keys": false,
     "one-line": [
       true,
@@ -87,12 +135,22 @@
       "check-else",
       "check-whitespace"
     ],
+    "one-variable-per-declaration": false,
+    "ordered-imports": true,
+    "pipe-prefix": [
+      true,
+      "sme"
+    ],
     "prefer-const": true,
+    "prefer-for-of": false,
     "quotemark": [
       true,
       "single"
     ],
     "radix": true,
+    "rxjs-collapse-imports": true,
+    "rxjs-proper-imports": true,
+    "space-before-function-paren": false,
     "semicolon": [
       true,
       "always"
@@ -112,7 +170,12 @@
         "variable-declaration": "nospace"
       }
     ],
+    "template-banana-in-box": true,
+    "template-no-negated-async": true,
+    "trailing-comma": false,
     "unified-signatures": false,
+    "use-lifecycle-interface": true,
+    "use-pipe-transform-interface": true,
     "variable-name": false,
     "whitespace": [
       true,
@@ -121,28 +184,6 @@
       "check-operator",
       "check-separator",
       "check-type"
-    ],
-    "no-output-on-prefix": true,
-    "use-input-property-decorator": true,
-    "use-output-property-decorator": true,
-    "use-host-property-decorator": true,
-    "no-input-rename": true,
-    "no-output-rename": true,
-    "use-life-cycle-interface": true,
-    "use-pipe-transform-interface": true,
- 
-    "interface-name": [
-      true,
-      "never-prefix"
-    ],
-    "component-class-suffix": true,
-    "directive-class-suffix": true,
-    "naming-convention": [
-      true,
-      {
-        "type": "enumMember",
-        "format": "PascalCase"
-      }
     ]
   }
 }

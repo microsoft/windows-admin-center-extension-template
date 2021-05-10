@@ -23,7 +23,7 @@
               "src/manifest.json"
             ],
             "styles": [
-              "node_modules/@microsoft/windows-admin-center-sdk/styles/css/main.css"
+              "node_modules/@msft-sme/styles/css/main.css"
             ],
             "scripts": [
               "node_modules/jquery/dist/jquery.min.js"
@@ -41,7 +41,7 @@
               "outputHashing": "all",
               "sourceMap": false,
               "extractCss": true,
-              "namedChunks": true,
+              "namedChunks": false,
               "aot": true,
               "extractLicenses": false,
               "vendorChunk": false,
@@ -64,6 +64,12 @@
           "configurations": {
             "production": {
               "browserTarget": "module-app:build:production"
+            },
+            "https": {
+              "ssl": true,
+              "sslCert": "../certificate/localhost.cert",
+              "sslKey": "../certificate/localhost.key",
+              "port": 4201
             }
           }
         },
@@ -82,7 +88,7 @@
             "tsConfig": "src/tsconfig.spec.json",
             "karmaConfig": "src/karma.conf.js",
             "styles": [
-              "node_modules/@microsoft/windows-admin-center-sdk/styles/css/main.css"
+              "node_modules/@msft-sme/styles/css/main.css"
             ],
             "scripts": [],
             "assets": [
@@ -91,20 +97,20 @@
             ]
           },
           "configurations": {
-              "production": {
-                  "fileReplacements": [
-                      {
-                          "replace": "src/environments/environment.ts",
-                          "with": "src/environments/environment.prod.ts"
-                      }
-                  ],
-                  "sourceMap": false
-              },
-              "debug": {
-                  "sourceMap": true,
-                  "browsers": "Chrome",
-                  "watch": true
-              }
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
+              "sourceMap": false
+            },
+            "debug": {
+              "sourceMap": true,
+              "browsers": "Chrome",
+              "watch": true
+            }
           }
         },
         "lint": {
