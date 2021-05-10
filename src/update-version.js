@@ -14,7 +14,17 @@ module.exports = {
         updatePackages(rootPath, audit);
         copyNewFiles(audit);
         parseLintErrors(audit, (results) => {
-            console.log(results);
+            
+            for (const result of results) {
+                console.log(`File path: ${result.filePath}`);
+                console.log(`Errors:`);
+                for (const error of result.errors) {
+                    console.log(`\tType: ${error.type}`);
+                    console.log(`\tLine: ${error.position.line}`);
+                    console.log(`\tChar: ${error.position.char}`);
+                    console.log(`\tMessage: ${error.message}`);
+                }
+            }
 
             // searchFolder(rootPath)
             // .then(results => {
@@ -36,15 +46,15 @@ function parseLintErrors(audit, callback) {
 
     console.log('Linting, please wait...')
     exec(cmd, (error, stdout, stderr) => {
-        stdout = stdout + "\nC:/";
         console.log('stdout: ' + stdout);
-        // console.log('stderr: ' + stderr);
-        // if (error !== null) {
-        //     console.log('exec error: ' + error);
-        // }
+        console.log('stderr: ' + stderr);
+        if (error !== null) {
+            console.log('Error during ng lint: ' + error);
+        }
+        stdout = stdout + "\nC:/";
     
         const captureAll = /[\s\S]+?(?=\w+:\/)/g;
-        const captureFilePath = /(.+)(?=:\d+:\d+)/;
+        const captureFilePath = /(.+)(?=:\d+:\d+)/g;
         const captureErrorPosition = /(?<=ERROR: )(\d+:\d+)/g; // Format: "lineNumber:characterNumber"
         const captureErrorType = /(?<=ERROR: \d+:\d+\s+)\S+/g;
         const captureErrorMessage = /(?<=ERROR: \d+:\d+\s+\S+\s+)\S.+/g;
@@ -52,15 +62,13 @@ function parseLintErrors(audit, callback) {
         const lintOutputByFile = stdout.match(captureAll);
         
         const results = [];
-        for (const file in lintOutputByFile) {
+        for (const file of lintOutputByFile) {
             const filePath = file.match(captureFilePath);
 
             // If no file path found, this match doesn't contain errors
             if (!filePath || filePath.length === 0) {
                 continue;
             }
-
-            console.log(`File path: ${filePath[0]}`);
     
             const errorPositionStrings = file.match(captureErrorPosition);
     
@@ -68,8 +76,6 @@ function parseLintErrors(audit, callback) {
             if (!errorPositionStrings || errorPositionStrings.length === 0) {
                 continue;
             }
-
-            console.log(`Error position strings: ${errorPositionStrings}`)
     
             const errorPositions = errorPositionStrings.map((value) => {
                 const splitValues = value.split(':');
@@ -136,9 +142,9 @@ function copyNewFiles(audit) {
         fs.unlinkSync('.\\package-lock.json');
     }
 
-    if(fse.existsSync('.\\node_modules')) {
-        fse.rmdirSync('.\\node_modules');
-    }
+    // if(fse.existsSync('.\\node_modules')) {
+    //     fse.rmdirSync('.\\node_modules', { });
+    // }
 
     console.log('All new config and json files have been transferred.');
 }
@@ -203,7 +209,7 @@ function updatePackages(rootPath, audit) {
 function updatePackageObject(sourceObject, targetObject) {
     for (const package in sourceObject) {
         if (Object.prototype.hasOwnProperty.call(sourceObject, package)) {
-            const message = `Package '${package}' will go to version ${targetObject[package]}`;
+            const message = `Package '${package}' will go to version ${sourceObject[package]}`;
             console.log(message);
             updateSource.push(message + '\n');
 

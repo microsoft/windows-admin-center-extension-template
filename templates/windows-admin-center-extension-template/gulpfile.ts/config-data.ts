@@ -9,15 +9,17 @@ export function gulpConfig(): Config {
             localePath: 'loc/output'
         },
         powershell: {
-            name: 'Microsoft.SME.FileExplorer',
-            guid: '5d7219a0-26a2-4a82-a273-d6f47227454b',
+            name: '{!company-name}.{!module-name}',
+            guid: '{!guid}',
             list: [
                 'src',
-                'node_modules/@msft-sme/core'
+                'node_modules/@microsoft/windows-admin-center-sdk'
             ],
             enablePester: true,
             skipCim: true,
-            skipResjson: true
+            skipManifest: false,
+            skipModule: false,
+            skipResjson: false
         }
     };
 }
