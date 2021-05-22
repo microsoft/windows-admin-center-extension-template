@@ -14,17 +14,7 @@ module.exports = {
         updatePackages(rootPath, audit);
         copyNewFiles(audit);
         parseLintErrors(audit, (results) => {
-            
-            for (const result of results) {
-                console.log(`File path: ${result.filePath}`);
-                console.log(`Errors:`);
-                for (const error of result.errors) {
-                    console.log(`\tType: ${error.type}`);
-                    console.log(`\tLine: ${error.position.line}`);
-                    console.log(`\tChar: ${error.position.char}`);
-                    console.log(`\tMessage: ${error.message}`);
-                }
-            }
+            fixLintErrors(results);
 
             // searchFolder(rootPath)
             // .then(results => {
@@ -276,23 +266,52 @@ function isValidDirectory(path) {
 //     fse.writeFileSync(result);
 // }
 
-function executeReplaceOperations(filePath, errors) {
-    let fileData = readFileData(filePath);
+function fixLintErrors(files) {
+    const solutionLookup = buildErrorFunctionLookup();
 
-    if (!fileData) {
-        console.log(`Couldn't retrieve file data for path ${filePath}. Please verify this path is valid.`);
-        return;
+    for (const file of files) {
+        console.log(`File path: ${file.filePath}`);
+
+        let fileData = readFileData(file.filePath);
+
+        if (!fileData) {
+            console.log(`Couldn't retrieve file data for path ${file.filePath}. Please verify this path is valid.`);
+            continue;
+        }
+
+        console.log(`Errors:`);
+        for (const error of file.errors) {
+            fileData = fixLintError(fileData, error, solutionLookup);
+        }
+
+        fse.writeFileSync(file.filePath, fileData);
+
+        console.log('');
     }
+}
+
+function fixLintError(fileData, error, solutionLookup) {
+
+    console.log(`\tType: ${error.type}`);
+    console.log(`\tLine: ${error.position.line}`);
+    console.log(`\tChar: ${error.position.char}`);
+    console.log(`\tMessage: ${error.message}`);
+
+    const solutionFunction = solutionLookup[error.type];
+
+    return solutionFunction(fileData);
 
     // error = { position, type, message }
-    for (const error of errors) {
-        // TODO: Determine regex to use
-        // Determine what to replace
-        // Replace or log in audit
-        // Perform replace on fileData, store result back into fileData. Also make sure to log in audit
-    }
+    // TODO: Determine regex to use
+    // Determine what to replace
+    // Replace or log in audit
+    // Perform replace on fileData, store result back into fileData. Also make sure to log in audit
+}
 
-    fse.writeFileSync(filePath, fileData);
+function buildErrorFunctionLookup() {
+    return {
+        'foo': (fileData) => { return fileData; }
+    }
 }
 
 function readFileData(filePath) {
