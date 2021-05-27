@@ -1,6 +1,7 @@
 const values = require('yargs').argv;
 const childProcess = require('child_process');
 const log = require('fancy-log');
+const appRoot = require('app-root-path');
 
 module Utilities {
 
@@ -34,9 +35,10 @@ module Utilities {
     }
 
     export function ng(cb, args, options = {}, codeHandler = null) {
-        log('ng', args.join(' '));
+        const ng_cmd = appRoot.path + '\\node_modules\\.bin\\ng.cmd';
+        log(ng_cmd, args.join(' '));
         const errors = [];
-        const cmd = childProcess.spawn('ng.cmd', args, options);
+        const cmd = childProcess.spawn(ng_cmd, args, options);
         cmd.stdout.on('data', function (data) { log(data.toString().trim()); });
         cmd.stderr.on('data', function (data) {
             const message = data.toString().trim();
