@@ -11,21 +11,23 @@ let updateSource = [];
 
 module.exports = {
     update: function (audit, rootPath) {
-        updatePackages(rootPath, audit);
-        copyNewFiles(audit);
-        parseLintErrors(audit, (results) => {
-            fixLintErrors(results);
-
-            // searchFolder(rootPath)
-            // .then(results => {
-            //     for (var file in results) {
-            //         searchFile(results[file], audit);
-            //     }
-
-            //     console.log('');
-
-            //     finalize();
-            // });
+        updatePackages(rootPath, audit, () => {
+            copyNewFiles(audit);
+            parseLintErrors(audit, (results) => {
+                fixLintErrors(audit, results);
+                finalize();
+    
+                // searchFolder(rootPath)
+                // .then(results => {
+                //     for (var file in results) {
+                //         searchFile(results[file], audit);
+                //     }
+    
+                //     console.log('');
+    
+                //     finalize();
+                // });
+            });
         });
     }
 }
@@ -36,10 +38,11 @@ function parseLintErrors(audit, callback) {
 
     console.log('Linting, please wait...')
     exec(cmd, (error, stdout, stderr) => {
-        console.log('stdout: ' + stdout);
-        console.log('stderr: ' + stderr);
         if (error !== null) {
             console.log('Error during ng lint: ' + error);
+        }
+        if (stderr !== null) {
+            console.log('Error during ng lint: ' + stderr);
         }
         stdout = stdout + "\nC:/";
     
@@ -123,6 +126,7 @@ function copyNewFiles(audit) {
     fse.copyFileSync(upgradedTemplatePath + '\\src\\tsconfig.spec.json', '.\\src\\tsconfig.spec.json');
     fse.copyFileSync(upgradedTemplatePath + '\\src\\polyfills.ts', '.\\src\\polyfills.ts');
     fse.copyFileSync(upgradedTemplatePath + '\\src\\karma.conf.js', '.\\src\\karma.conf.js');
+    fse.copyFileSync(upgradedTemplatePath + '\\src\\test.ts', '.\\src\\test.ts');
 
     if(fse.existsSync('.\\tsconfig-inline.json')) {
         fs.unlinkSync('.\\tsconfig-inline.json');
@@ -132,14 +136,10 @@ function copyNewFiles(audit) {
         fs.unlinkSync('.\\package-lock.json');
     }
 
-    // if(fse.existsSync('.\\node_modules')) {
-    //     fse.rmdirSync('.\\node_modules', { });
-    // }
-
     console.log('All new config and json files have been transferred.');
 }
 
-function updatePackages(rootPath, audit) {
+function updatePackages(rootPath, audit, callback) {
     if (!audit) {
         console.log('Beginning package update.');
     } else {
@@ -191,6 +191,19 @@ function updatePackages(rootPath, audit) {
     if (!audit) {
         console.log('Finished updating packages, writing to file.');
         fse.writeJSONSync(packageFile, packages, { spaces: 2 });
+
+        console.log('Running npm install, please wait...');
+        exec('npm install', (error, stdout, stderr) => {
+            if (error !== null) {
+                console.log('Error during npm install: ' + error);
+            }
+            if (stderr !== null) {
+                console.log('Error during npm install: ' + stderr);
+            }
+            console.log(stdout + '\n');
+
+            callback();
+        });
     } else {
         console.log('Finished audit of package update.')
     }
@@ -266,40 +279,60 @@ function isValidDirectory(path) {
 //     fse.writeFileSync(result);
 // }
 
-function fixLintErrors(files) {
-    const solutionLookup = buildErrorFunctionLookup();
+function fixLintErrors(audit, files) {
+    const solutionLookup = buildSolutionFunctionLookup();
 
     for (const file of files) {
-        console.log(`File path: ${file.filePath}`);
+        let message = `File path: ${file.filePath}`;
+        console.log(message);
+        updateSource.push(message + '\n');
 
         let fileData = readFileData(file.filePath);
 
         if (!fileData) {
-            console.log(`Couldn't retrieve file data for path ${file.filePath}. Please verify this path is valid.`);
+            message = `Couldn't retrieve file data for path ${file.filePath}. Please verify this path is valid.`;
+            console.log(message);
+            updateSource.push(message + '\n');
             continue;
         }
 
-        console.log(`Errors:`);
+        message = `Errors:`
+        console.log(message);
+        updateSource.push(message + '\n');
         for (const error of file.errors) {
-            fileData = fixLintError(fileData, error, solutionLookup);
+            fileData = fixLintError(audit, fileData, error, solutionLookup);
         }
 
         fse.writeFileSync(file.filePath, fileData);
 
         console.log('');
+        updateSource.push('\n');
     }
 }
 
-function fixLintError(fileData, error, solutionLookup) {
+function fixLintError(audit, fileData, error, solutionLookup) {
+    let message = `\tType: ${error.type}`;
+    console.log(message);
+    updateSource.push(message + '\n');
+    
+    message = `\tLine: ${error.position.line}`;
+    console.log(message);
+    updateSource.push(message + '\n');
 
-    console.log(`\tType: ${error.type}`);
-    console.log(`\tLine: ${error.position.line}`);
-    console.log(`\tChar: ${error.position.char}`);
-    console.log(`\tMessage: ${error.message}`);
+    message = `\tChar: ${error.position.char}`;
+    console.log(message);
+    updateSource.push(message + '\n');
+
+    message = `\tMessage: ${error.message}\n`;
+    console.log(message);
+    updateSource.push(message + '\n');
+
+    if (audit) {
+        return fileData;
+    }
 
     const solutionFunction = solutionLookup[error.type];
-
-    return solutionFunction(fileData);
+    return solutionFunction != null ? solutionFunction(fileData) : fileData;
 
     // error = { position, type, message }
     // TODO: Determine regex to use
@@ -308,7 +341,7 @@ function fixLintError(fileData, error, solutionLookup) {
     // Perform replace on fileData, store result back into fileData. Also make sure to log in audit
 }
 
-function buildErrorFunctionLookup() {
+function buildSolutionFunctionLookup() {
     return {
         'foo': (fileData) => { return fileData; }
     }

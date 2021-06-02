@@ -60,7 +60,7 @@
     "max-classes-per-file": false,
     "max-line-length": [
       true,
-      180
+      140
     ],
     "member-access": false,
     "member-ordering": [

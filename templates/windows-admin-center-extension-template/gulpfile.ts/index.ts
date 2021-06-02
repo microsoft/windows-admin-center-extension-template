@@ -23,9 +23,7 @@ module IndexModule {
     export const resjson = ResjsonModule.resjson;
     export const powershell = config.powershell.skip ? function powershellSkip(cb) { cb(); } : PowerShellModule.powershell;
     export const copy = CopyModule.copyApp;
-    export const inlineDist = CopyModule.inlineDist;
-    export const inlineSource = CompileModule.inlineSource;
-    export const inlineCompile = CompileModule.inlineCompile;
+    export const compile = CompileModule.compile;
     export const bundleApp = CompileModule.bundleApp;
     export const serveApp = CompileModule.serveApp;
     export const ut = TestModule.unitTestApp;
@@ -39,7 +37,6 @@ module IndexModule {
 
     // Build Tasks
     export const generate = parallel(resjson, powershell);
-    export const compile = series(inlineSource, inlineCompile, inlineDist);
     export const app = series(lintApp, bundleApp, copy);
     export const build = series(clean, generate, validate, lint, compile, copy, test, app, pester);
 
