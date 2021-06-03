@@ -111,16 +111,20 @@ function parseBuildErrors(audit, callback) {
         if (error !== null) {
             console.log('Error during ng build: ' + error);
         }
-        // if (stderr !== null) {
-        //     console.log('Error during ng build: ' + stderr);
-        // }
 
-        const captureAll = /[\s\S]+?(?=\n\n\n)/g;
+        console.log('stdout: ' + stdout);
+
+        const captureAll = /[\s\S]+?(?=(Error|Warning):)/g;
         const captureFilePath = /(?<=Error: )(.+)(?=:\d+:\d+)/g;
         const captureErrorCode = /(?<=Error:.+- error )(TS\d+)/g;
         const captureErrorMessage = /(?<=TS\d+: ).+/g;
 
-        const buildOutputByCode = stdout.match(captureAll);
+        stderr = stderr + '\n\n\nWarning:'
+        const buildOutputByCode = stderr.match(captureAll);
+
+        if (!buildOutputByCode) {
+            return callback([]);
+        }
 
         const results = [];
         for (const file of buildOutputByCode) {
