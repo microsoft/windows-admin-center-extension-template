@@ -15,18 +15,21 @@ module.exports = {
             copyNewFiles(audit);
             parseLintErrors(audit, (results) => {
                 fixLintErrors(audit, results);
-                finalize();
-    
-                // searchFolder(rootPath)
-                // .then(results => {
-                //     for (var file in results) {
-                //         searchFile(results[file], audit);
-                //     }
-    
-                //     console.log('');
-    
-                //     finalize();
-                // });
+                parseBuildErrors(audit, (results) => {
+                    fixBuildErrors(audit, results)
+                    finalize();
+
+                    // searchFolder(rootPath)
+                    // .then(results => {
+                    //     for (var file in results) {
+                    //         searchFile(results[file], audit);
+                    //     }
+        
+                    //     console.log('');
+        
+                    //     finalize();
+                    // });
+                });
             });
         });
     }
@@ -72,7 +75,7 @@ function parseLintErrors(audit, callback) {
     
             const errorPositions = errorPositionStrings.map((value) => {
                 const splitValues = value.split(':');
-                return { line: splitValues[0], char: splitValues[1] } // TODO: If reading line by line, char by char, subtract 1 from this to 0 index
+                return { line: splitValues[0], char: splitValues[1] }
             });
     
             const errorTypes = file.match(captureErrorType);
@@ -90,6 +93,56 @@ function parseLintErrors(audit, callback) {
             results.push({
                 filePath: filePath[0],
                 errors: errors
+            });
+        }
+
+        callback(results);
+    });
+}
+
+function parseBuildErrors(audit, callback) {
+    if (audit) {
+        callback();
+        return;
+    }
+
+    console.log('Building, please wait...')
+    exec('ng build', (error, stdout, stderr) => {
+        if (error !== null) {
+            console.log('Error during ng build: ' + error);
+        }
+        // if (stderr !== null) {
+        //     console.log('Error during ng build: ' + stderr);
+        // }
+
+        const captureAll = /[\s\S]+?(?=\n\n\n)/g;
+        const captureFilePath = /(?<=Error: )(.+)(?=:\d+:\d+)/g;
+        const captureErrorCode = /(?<=Error:.+- error )(TS\d+)/g;
+        const captureErrorMessage = /(?<=TS\d+: ).+/g;
+
+        const buildOutputByCode = stdout.match(captureAll);
+
+        const results = [];
+        for (const file of buildOutputByCode) {
+            const filePath = file.match(captureFilePath);
+
+            // If no file path found, this match doesn't contain errors
+            if (!filePath || filePath.length === 0) {
+                continue;
+            }
+
+            const errorCode = file.match(captureErrorCode);
+
+            if (!errorCode || errorCode.length === 0) {
+                continue;
+            }
+
+            const errorMessage = file.match(captureErrorMessage);
+
+            results.push({
+                filePath: filePath[0],
+                type: errorCode[0],
+                message: errorMessage[0]
             });
         }
 
@@ -206,6 +259,7 @@ function updatePackages(rootPath, audit, callback) {
         });
     } else {
         console.log('Finished audit of package update.')
+        callback();
     }
 }
 
@@ -280,7 +334,7 @@ function isValidDirectory(path) {
 // }
 
 function fixLintErrors(audit, files) {
-    const solutionLookup = buildSolutionFunctionLookup();
+    const solutionLookup = initSolutionFunctionLookup();
 
     for (const file of files) {
         let message = `File path: ${file.filePath}`;
@@ -300,7 +354,7 @@ function fixLintErrors(audit, files) {
         console.log(message);
         updateSource.push(message + '\n');
         for (const error of file.errors) {
-            fileData = fixLintError(audit, fileData, error, solutionLookup);
+            fileData = fixError(audit, fileData, error, solutionLookup);
         }
 
         fse.writeFileSync(file.filePath, fileData);
@@ -310,18 +364,18 @@ function fixLintErrors(audit, files) {
     }
 }
 
-function fixLintError(audit, fileData, error, solutionLookup) {
+function fixError(audit, fileData, error, solutionLookup) {
     let message = `\tType: ${error.type}`;
     console.log(message);
     updateSource.push(message + '\n');
     
-    message = `\tLine: ${error.position.line}`;
-    console.log(message);
-    updateSource.push(message + '\n');
+    // message = `\tLine: ${error.position.line}`;
+    // console.log(message);
+    // updateSource.push(message + '\n');
 
-    message = `\tChar: ${error.position.char}`;
-    console.log(message);
-    updateSource.push(message + '\n');
+    // message = `\tChar: ${error.position.char}`;
+    // console.log(message);
+    // updateSource.push(message + '\n');
 
     message = `\tMessage: ${error.message}\n`;
     console.log(message);
@@ -341,9 +395,40 @@ function fixLintError(audit, fileData, error, solutionLookup) {
     // Perform replace on fileData, store result back into fileData. Also make sure to log in audit
 }
 
-function buildSolutionFunctionLookup() {
+function fixBuildErrors(audit, errors) {
+    const solutionLookup = initSolutionFunctionLookup();
+
+    for (const error of errors) {
+        let message = `File path: ${error.filePath}`;
+        console.log(message);
+        updateSource.push(message + '\n');
+
+        let fileData = readFileData(error.filePath);
+
+        if (!fileData) {
+            message = `Couldn't retrieve file data for path ${error.filePath}. Please verify this path is valid.`;
+            console.log(message);
+            updateSource.push(message + '\n');
+            continue;
+        }
+
+        fileData = fixError(audit, fileData, error, solutionLookup);
+        fse.writeFileSync(error.filePath, fileData);
+
+        console.log('');
+        updateSource.push('\n');
+    }
+}
+
+function initSolutionFunctionLookup() {
     return {
-        'foo': (fileData) => { return fileData; }
+        'only-arrow-functions': (fileData) => {
+            const parameterRegex = /(?<=function\s*\()[^)]*/;
+            const targetRegex = /function\s*\([^)]*\)/;
+
+            const parameters = fileData.match(parameterRegex);
+            return replaceInString(fileData, targetRegex, `(${parameters[0]}) =>`);
+        }
     }
 }
 

@@ -44,8 +44,8 @@ export module Utilities {
         log('ng', args.join(' '));
         const errors = [];
         const cmd = childProcess.spawn('ng.cmd', args, options);
-        cmd.stdout.on('data', function (data) { log(data.toString().trim()); });
-        cmd.stderr.on('data', function (data) {
+        cmd.stdout.on('data', (data) => { log(data.toString().trim()); });
+        cmd.stderr.on('data', (data) => {
             const message = data.toString().trim();
             if (message.toUpperCase().startsWith('ERROR')) {
                 log.error(message);
@@ -54,7 +54,7 @@ export module Utilities {
                 log(message);
             }
         });
-        cmd.on('exit', function (code) {
+        cmd.on('exit', (code) => {
             if (codeHandler) {
                 const codeError = codeHandler(code);
                 if (codeError) {
