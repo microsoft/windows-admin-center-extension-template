@@ -13,6 +13,9 @@
   },
   "peerDependencies": {
     "@microsoft/windows-admin-center-sdk": "latest",
+    "@msft-sme/core": "1.1332.0",
+    "@msft-sme/angular": "1.1332.0",
+    "@msft-sme/styles": "1.1332.0",
     "@angular/animations": "11.2.14",
     "@angular/common": "11.2.14",
     "@angular/compiler": "11.2.14",
@@ -29,6 +32,11 @@
   },
   "devDependencies": {
     "@microsoft/windows-admin-center-sdk": "latest",
+    "@msft-sme/angular": "1.1332.0",
+    "@msft-sme/core": "1.1332.0",
+    "@msft-sme/e2e": "1.1332.0",
+    "@msft-sme/styles": "1.1332.0",
+    "@msft-sme/tools": "1.1332.0",
     "@angular-devkit/build-angular": "0.1102.13",
     "@angular-devkit/build-ng-packagr": "0.1002.0",
     "@angular-devkit/build-optimizer": "0.1102.13",

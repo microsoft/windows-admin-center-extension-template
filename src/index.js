@@ -8,7 +8,11 @@ var update = require('./update-version');
 const argv = minimist(process.argv.slice(2));
 
 if (argv._ == 'updateEleven') {
-	update.update((argv.audit === undefined || argv.audit === true) && argv.update === undefined, process.cwd());
+	update.update(
+		(argv.audit === undefined || argv.audit === true) && argv.update === undefined,
+		!(argv.internal === undefined || argv.internal === false),
+		process.cwd()
+	);
 }
 else if (argv._ == 'create') {
 	createExtension();

@@ -10,104 +10,109 @@ let updateCount = 0;
 let updateSource = [];
 
 module.exports = {
-    update: function (audit, rootPath) {
-        updatePackages(rootPath, audit, () => {
-            copyNewFiles(audit);
-            parseLintErrors(audit, (results) => {
-                fixLintErrors(audit, results);
-                parseBuildErrors(audit, (results) => {
-                    fixBuildErrors(audit, results)
-                    finalize();
-
-                    // searchFolder(rootPath)
-                    // .then(results => {
-                    //     for (var file in results) {
-                    //         searchFile(results[file], audit);
-                    //     }
-        
-                    //     console.log('');
-        
-                    //     finalize();
-                    // });
-                });
-            });
-        });
+    update: function (audit, internal, rootPath) {
+        main(audit, internal, rootPath);
     }
 }
 
-function parseLintErrors(audit, callback) {
+async function main(audit, internal, rootPath) {
+    await updatePackages(rootPath, internal, audit)
+    copyNewFiles(audit);
+
+    const lintResults = await parseLintErrors(audit);
+    fixLintErrors(audit, lintResults);
+
+    const buildResults = await parseBuildErrors(audit);
+    fixBuildErrors(audit, buildResults)
+    
+    finalize();
+
+    // searchFolder(rootPath)
+    // .then(results => {
+    //     for (var file in results) {
+    //         searchFile(results[file], audit);
+    //     }
+
+    //     console.log('');
+
+    //     finalize();
+    // });
+}
+
+function parseLintErrors(audit) {
     // If audit is true, run without --fix flag
     let cmd = audit ? 'ng lint' : 'ng lint --fix';
 
     console.log('Linting, please wait...')
-    exec(cmd, (error, stdout, stderr) => {
-        if (error !== null) {
-            console.log('Error during ng lint: ' + error);
-        }
-        if (stderr !== null) {
-            console.log('Error during ng lint: ' + stderr);
-        }
-        stdout = stdout + "\nC:/";
-    
-        const captureAll = /[\s\S]+?(?=\w+:\/)/g;
-        const captureFilePath = /(.+)(?=:\d+:\d+)/g;
-        const captureErrorPosition = /(?<=ERROR: )(\d+:\d+)/g; // Format: "lineNumber:characterNumber"
-        const captureErrorType = /(?<=ERROR: \d+:\d+\s+)\S+/g;
-        const captureErrorMessage = /(?<=ERROR: \d+:\d+\s+\S+\s+)\S.+/g;
-    
-        const lintOutputByFile = stdout.match(captureAll);
+    return new Promise((resolve) => { 
+        exec(cmd, (error, stdout, stderr) => {
+            if (error !== null) {
+                console.log('Error during ng lint: ' + error);
+            }
+            if (stderr !== null) {
+                console.log('Error during ng lint: ' + stderr);
+            }
+            stdout = stdout + "\nC:/";
         
-        const results = [];
-        for (const file of lintOutputByFile) {
-            const filePath = file.match(captureFilePath);
+            const captureAll = /[\s\S]+?(?=\w+:\/)/g;
+            const captureFilePath = /(.+)(?=:\d+:\d+)/g;
+            const captureErrorPosition = /(?<=ERROR: )(\d+:\d+)/g; // Format: "lineNumber:characterNumber"
+            const captureErrorType = /(?<=ERROR: \d+:\d+\s+)\S+/g;
+            const captureErrorMessage = /(?<=ERROR: \d+:\d+\s+\S+\s+)\S.+/g;
+        
+            const lintOutputByFile = stdout.match(captureAll);
+            
+            const results = [];
+            for (const file of lintOutputByFile) {
+                const filePath = file.match(captureFilePath);
 
-            // If no file path found, this match doesn't contain errors
-            if (!filePath || filePath.length === 0) {
-                continue;
-            }
-    
-            const errorPositionStrings = file.match(captureErrorPosition);
-    
-            // If there are no linter errors in the current file, skip to the next
-            if (!errorPositionStrings || errorPositionStrings.length === 0) {
-                continue;
-            }
-    
-            const errorPositions = errorPositionStrings.map((value) => {
-                const splitValues = value.split(':');
-                return { line: splitValues[0], char: splitValues[1] }
-            });
-    
-            const errorTypes = file.match(captureErrorType);
-            const errorMessages = file.match(captureErrorMessage);
-    
-            const errors = []
-            for (let i = 0; i < errorPositions.length; i++) {
-                errors.push({
-                    position: errorPositions[i],
-                    type: errorTypes[i],
-                    message: errorMessages[i]
+                // If no file path found, this match doesn't contain errors
+                if (!filePath || filePath.length === 0) {
+                    continue;
+                }
+        
+                const errorPositionStrings = file.match(captureErrorPosition);
+        
+                // If there are no linter errors in the current file, skip to the next
+                if (!errorPositionStrings || errorPositionStrings.length === 0) {
+                    continue;
+                }
+        
+                const errorPositions = errorPositionStrings.map((value) => {
+                    const splitValues = value.split(':');
+                    return { line: splitValues[0], char: splitValues[1] }
+                });
+        
+                const errorTypes = file.match(captureErrorType);
+                const errorMessages = file.match(captureErrorMessage);
+        
+                const errors = []
+                for (let i = 0; i < errorPositions.length; i++) {
+                    errors.push({
+                        position: errorPositions[i],
+                        type: errorTypes[i],
+                        message: errorMessages[i]
+                    });
+                }
+        
+                results.push({
+                    filePath: filePath[0],
+                    errors: errors
                 });
             }
-    
-            results.push({
-                filePath: filePath[0],
-                errors: errors
-            });
-        }
 
-        callback(results);
+            resolve(results);
+        });
     });
 }
 
-function parseBuildErrors(audit, callback) {
+function parseBuildErrors(audit) {
     if (audit) {
-        callback();
-        return;
+        return new Promise(resolve => resolve());
     }
 
     console.log('Building, please wait...')
-    exec('ng build', (error, stdout, stderr) => {
+    return new Promise((resolve) => exec('ng build', (error, stdout, stderr) => {
         if (error !== null) {
             console.log('Error during ng build: ' + error);
         }
@@ -123,7 +128,7 @@ function parseBuildErrors(audit, callback) {
         const buildOutputByCode = stderr.match(captureAll);
 
         if (!buildOutputByCode) {
-            return callback([]);
+            return resolve([]);
         }
 
         const results = [];
@@ -150,8 +155,8 @@ function parseBuildErrors(audit, callback) {
             });
         }
 
-        callback(results);
-    });
+        resolve(results);
+    }));
 }
 
 function finalize() {
@@ -196,7 +201,7 @@ function copyNewFiles(audit) {
     console.log('All new config and json files have been transferred.');
 }
 
-function updatePackages(rootPath, audit, callback) {
+function updatePackages(rootPath, internal, audit) {
     if (!audit) {
         console.log('Beginning package update.');
     } else {
@@ -240,8 +245,8 @@ function updatePackages(rootPath, audit, callback) {
     let peerDependencies = packages.peerDependencies;
     let devDependencies = packages.devDependencies;
 
-    updatePackageObject(templatePeerDependencies, peerDependencies);
-    updatePackageObject(templateDevDependencies, devDependencies);
+    updatePackageObject(templatePeerDependencies, peerDependencies, internal);
+    updatePackageObject(templateDevDependencies, devDependencies, internal);
 
     updateSource.push('\n');
 
@@ -250,7 +255,7 @@ function updatePackages(rootPath, audit, callback) {
         fse.writeJSONSync(packageFile, packages, { spaces: 2 });
 
         console.log('Running npm install, please wait...');
-        exec('npm install', (error, stdout, stderr) => {
+        return new Promise((resolve) => exec('npm install', (error, stdout, stderr) => {
             if (error !== null) {
                 console.log('Error during npm install: ' + error);
             }
@@ -259,17 +264,23 @@ function updatePackages(rootPath, audit, callback) {
             }
             console.log(stdout + '\n');
 
-            callback();
-        });
+            resolve();
+        }));
     } else {
         console.log('Finished audit of package update.')
-        callback();
+
+        return new Promise(resolve => resolve());
     }
 }
 
-function updatePackageObject(sourceObject, targetObject) {
+function updatePackageObject(sourceObject, targetObject, internal) {
     for (const package in sourceObject) {
         if (Object.prototype.hasOwnProperty.call(sourceObject, package)) {
+            if ((internal && package === '@microsoft/windows-admin-center-sdk')
+                || !internal && package.startsWith('@msft-sme')) {
+                continue;
+            }
+
             const message = `Package '${package}' will go to version ${sourceObject[package]}`;
             console.log(message);
             updateSource.push(message + '\n');
