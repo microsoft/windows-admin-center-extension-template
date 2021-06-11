@@ -24,6 +24,7 @@
     "component-selector": [
       true,
       "element",
+      "sme",
       "kebab-case"
     ],
     "contextual-lifecycle": true,
@@ -35,6 +36,7 @@
     "directive-selector": [
       true,
       "attribute",
+      "sme",
       "camelCase"
     ],
     "eofline": true,
@@ -136,7 +138,8 @@
     "one-variable-per-declaration": false,
     "ordered-imports": true,
     "pipe-prefix": [
-      true
+      true,
+      "sme"
     ],
     "prefer-const": true,
     "prefer-for-of": false,

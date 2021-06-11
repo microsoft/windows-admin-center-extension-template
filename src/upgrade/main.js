@@ -4,33 +4,36 @@ const fse = require('fs-extra');
 const { resolve } = require('path');
 const { readdir, stat } = require('fs').promises;
 const fs = require('fs');
-const exec = require('child_process').exec;
 
-let updateCount = 0;
-let updateSource = [];
+const { updatePackages, copyNewFiles } = require('./file-updater');
+const { resolveLintErrors, resolveBuildErrors } = require('./error-updater');
 
 module.exports = {
-    update: function (audit, internal, rootPath) {
-        main(audit, internal, rootPath);
-    }
+    upgrade: main
 }
 
-async function main(audit, internal, rootPath) {
-    await updatePackages(rootPath, internal, audit)
-    copyNewFiles(audit);
+/**
+ * Driver function of upgrade command
+ * @param {boolean} audit Flag indicating if upgrade is running it audit mode
+ * @param {boolean} internal Flag indicating if upgrade is running for an internal WAC repository
+ * @param {string} rootPath Root path of the target repository
+ */
+async function main(audit, rootPath) {
+    let updateSource = [];
+    let updateCount = 0;
 
-    const lintResults = await parseLintErrors(audit);
-    fixLintErrors(audit, lintResults);
+    const internal = await updatePackages(rootPath, audit, updateSource)
+    copyNewFiles(audit, internal);
 
-    const buildResults = await parseBuildErrors(audit);
-    fixBuildErrors(audit, buildResults)
-    
-    finalize();
+    let errorCount = await resolveLintErrors(audit, updateSource);
+    errorCount += await resolveBuildErrors(audit, updateSource);
+
+    finalize(errorCount, updateSource, updateCount);
 
     // searchFolder(rootPath)
     // .then(results => {
     //     for (var file in results) {
-    //         searchFile(results[file], audit);
+    //         searchFile(results[file], audit, updateSource, updateCount);
     //     }
 
     //     console.log('');
@@ -39,255 +42,14 @@ async function main(audit, internal, rootPath) {
     // });
 }
 
-function parseLintErrors(audit) {
-    // If audit is true, run without --fix flag
-    let cmd = audit ? 'ng lint' : 'ng lint --fix';
-
-    console.log('Linting, please wait...')
-    return new Promise((resolve) => { 
-        exec(cmd, (error, stdout, stderr) => {
-            if (error !== null) {
-                console.log('Error during ng lint: ' + error);
-            }
-            if (stderr !== null) {
-                console.log('Error during ng lint: ' + stderr);
-            }
-            stdout = stdout + "\nC:/";
-        
-            const captureAll = /[\s\S]+?(?=\w+:\/)/g;
-            const captureFilePath = /(.+)(?=:\d+:\d+)/g;
-            const captureErrorPosition = /(?<=ERROR: )(\d+:\d+)/g; // Format: "lineNumber:characterNumber"
-            const captureErrorType = /(?<=ERROR: \d+:\d+\s+)\S+/g;
-            const captureErrorMessage = /(?<=ERROR: \d+:\d+\s+\S+\s+)\S.+/g;
-        
-            const lintOutputByFile = stdout.match(captureAll);
-            
-            const results = [];
-            for (const file of lintOutputByFile) {
-                const filePath = file.match(captureFilePath);
-
-                // If no file path found, this match doesn't contain errors
-                if (!filePath || filePath.length === 0) {
-                    continue;
-                }
-        
-                const errorPositionStrings = file.match(captureErrorPosition);
-        
-                // If there are no linter errors in the current file, skip to the next
-                if (!errorPositionStrings || errorPositionStrings.length === 0) {
-                    continue;
-                }
-        
-                const errorPositions = errorPositionStrings.map((value) => {
-                    const splitValues = value.split(':');
-                    return { line: splitValues[0], char: splitValues[1] }
-                });
-        
-                const errorTypes = file.match(captureErrorType);
-                const errorMessages = file.match(captureErrorMessage);
-        
-                const errors = []
-                for (let i = 0; i < errorPositions.length; i++) {
-                    errors.push({
-                        position: errorPositions[i],
-                        type: errorTypes[i],
-                        message: errorMessages[i]
-                    });
-                }
-        
-                results.push({
-                    filePath: filePath[0],
-                    errors: errors
-                });
-            }
-
-            resolve(results);
-        });
-    });
-}
-
-function parseBuildErrors(audit) {
-    if (audit) {
-        return new Promise(resolve => resolve());
-    }
-
-    console.log('Building, please wait...')
-    return new Promise((resolve) => exec('ng build', (error, stdout, stderr) => {
-        if (error !== null) {
-            console.log('Error during ng build: ' + error);
-        }
-
-        console.log('stdout: ' + stdout);
-
-        const captureAll = /[\s\S]+?(?=(Error|Warning):)/g;
-        const captureFilePath = /(?<=Error: )(.+)(?=:\d+:\d+)/g;
-        const captureErrorCode = /(?<=Error:.+- error )(TS\d+)/g;
-        const captureErrorMessage = /(?<=TS\d+: ).+/g;
-
-        stderr = stderr + '\n\n\nWarning:'
-        const buildOutputByCode = stderr.match(captureAll);
-
-        if (!buildOutputByCode) {
-            return resolve([]);
-        }
-
-        const results = [];
-        for (const file of buildOutputByCode) {
-            const filePath = file.match(captureFilePath);
-
-            // If no file path found, this match doesn't contain errors
-            if (!filePath || filePath.length === 0) {
-                continue;
-            }
-
-            const errorCode = file.match(captureErrorCode);
-
-            if (!errorCode || errorCode.length === 0) {
-                continue;
-            }
-
-            const errorMessage = file.match(captureErrorMessage);
-
-            results.push({
-                filePath: filePath[0],
-                type: errorCode[0],
-                message: errorMessage[0]
-            });
-        }
-
-        resolve(results);
-    }));
-}
-
-function finalize() {
+function finalize(errorCount, updateSource, updateCount) {
     fse.outputFileSync('UpgradeAudit.txt', updateSource);
     console.log('');
     console.log('|==========================================================|')
+    console.log(` There is(are) ${errorCount} unresolved errors(s) that need to be handled.`);
     console.log(` There is(are) ${updateCount} update(s) that need to be handled.`);
     console.log(` A log is available at ${process.cwd()}\\UpgradeAudit.txt`);
     console.log('|==========================================================|')
-}
-
-function copyNewFiles(audit) {
-    if (audit) {
-        return;
-    }
-
-    let ignoresPath = __dirname.substring(0, __dirname.length - 3) + 'templates\\ignores';
-    let upgradedTemplatePath = __dirname.substring(0, __dirname.length - 3) + 'templates\\windows-admin-center-extension-template';
-
-    fse.copyFileSync(ignoresPath + '\\git', '.\\.gitignore');
-    fse.copyFileSync(ignoresPath + '\\npm', '.\\.npmignore');
-    fse.copyFileSync(upgradedTemplatePath + '\\tslint.json', '.\\tslint.json');
-    fse.copySync(upgradedTemplatePath + '\\gulpfile.ts', '.\\gulpfile.ts');
-    fse.copyFileSync(upgradedTemplatePath + '\\tsconfig.base.json', '.\\tsconfig.base.json');
-    fse.copyFileSync(upgradedTemplatePath + '\\tsconfig.json', '.\\tsconfig.json');
-    fse.copyFileSync(upgradedTemplatePath + '\\angular.json', '.\\angular.json');
-    fse.copyFileSync(upgradedTemplatePath + '\\tsconfig.inline.json', '.\\tsconfig.inline.json');
-    fse.copyFileSync(upgradedTemplatePath + '\\src\\tsconfig.app.json', '.\\src\\tsconfig.app.json');
-    fse.copyFileSync(upgradedTemplatePath + '\\src\\tsconfig.spec.json', '.\\src\\tsconfig.spec.json');
-    fse.copyFileSync(upgradedTemplatePath + '\\src\\polyfills.ts', '.\\src\\polyfills.ts');
-    fse.copyFileSync(upgradedTemplatePath + '\\src\\karma.conf.js', '.\\src\\karma.conf.js');
-    fse.copyFileSync(upgradedTemplatePath + '\\src\\test.ts', '.\\src\\test.ts');
-
-    if(fse.existsSync('.\\tsconfig-inline.json')) {
-        fs.unlinkSync('.\\tsconfig-inline.json');
-    }
-
-    if(fse.existsSync('.\\package-lock.json')) {
-        fs.unlinkSync('.\\package-lock.json');
-    }
-
-    console.log('All new config and json files have been transferred.');
-}
-
-function updatePackages(rootPath, internal, audit) {
-    if (!audit) {
-        console.log('Beginning package update.');
-    } else {
-        console.log('Beginning package update audit.')
-    }
-
-    const packageFile = rootPath + "\\package.json";
-    const templatePackageFile = __dirname.substring(0, __dirname.length - 3) + 'templates\\windows-admin-center-extension-template\\package.json';
-
-    const templatePackages = readFileJSON(templatePackageFile);
-
-    if (templatePackages === null) {
-        console.log(`An unexpected error occurred, template package file does not exist. Please verify file exists at path ${templatePackageFile}`);
-        return;
-    }
-
-    const templatePeerDependencies = templatePackages.peerDependencies;
-    const templateDevDependencies = templatePackages.devDependencies;
-
-    // Use equality operator instead of strict equality operator to check for null or undefined
-    if (templatePeerDependencies == null || templateDevDependencies == null) {
-        console.log(`An unexpected error occurred, template package file is malformed. Please verify file at path ${templatePackageFile} has both "peerDependencies" and "devDependencies" defined.`)
-    }
-
-    let packages = readFileJSON(packageFile);
-
-    if (packages === null) {
-        console.log(`No existing package file exists, creating new package file at path ${packageFile}.`)
-        fs.copyFileSync(templatePackageFile, packageFile);
-        return;
-    }
-
-    if (packages.peerDependencies == null) {
-        packages.peerDependencies = {};
-    }
-
-    if (packages.devDependencies == null) {
-        packages.devDependencies = {};
-    }
-
-    let peerDependencies = packages.peerDependencies;
-    let devDependencies = packages.devDependencies;
-
-    updatePackageObject(templatePeerDependencies, peerDependencies, internal);
-    updatePackageObject(templateDevDependencies, devDependencies, internal);
-
-    updateSource.push('\n');
-
-    if (!audit) {
-        console.log('Finished updating packages, writing to file.');
-        fse.writeJSONSync(packageFile, packages, { spaces: 2 });
-
-        console.log('Running npm install, please wait...');
-        return new Promise((resolve) => exec('npm install', (error, stdout, stderr) => {
-            if (error !== null) {
-                console.log('Error during npm install: ' + error);
-            }
-            if (stderr !== null) {
-                console.log('Error during npm install: ' + stderr);
-            }
-            console.log(stdout + '\n');
-
-            resolve();
-        }));
-    } else {
-        console.log('Finished audit of package update.')
-
-        return new Promise(resolve => resolve());
-    }
-}
-
-function updatePackageObject(sourceObject, targetObject, internal) {
-    for (const package in sourceObject) {
-        if (Object.prototype.hasOwnProperty.call(sourceObject, package)) {
-            if ((internal && package === '@microsoft/windows-admin-center-sdk')
-                || !internal && package.startsWith('@msft-sme')) {
-                continue;
-            }
-
-            const message = `Package '${package}' will go to version ${sourceObject[package]}`;
-            console.log(message);
-            updateSource.push(message + '\n');
-
-            targetObject[package] = sourceObject[package];
-        }
-    }
 }
 
 async function searchFolder(folderPath) {
@@ -348,129 +110,6 @@ function isValidDirectory(path) {
 //     fse.writeFileSync(result);
 // }
 
-function fixLintErrors(audit, files) {
-    const solutionLookup = initSolutionFunctionLookup();
-
-    for (const file of files) {
-        let message = `File path: ${file.filePath}`;
-        console.log(message);
-        updateSource.push(message + '\n');
-
-        let fileData = readFileData(file.filePath);
-
-        if (!fileData) {
-            message = `Couldn't retrieve file data for path ${file.filePath}. Please verify this path is valid.`;
-            console.log(message);
-            updateSource.push(message + '\n');
-            continue;
-        }
-
-        message = `Errors:`
-        console.log(message);
-        updateSource.push(message + '\n');
-        for (const error of file.errors) {
-            fileData = fixError(audit, fileData, error, solutionLookup);
-        }
-
-        fse.writeFileSync(file.filePath, fileData);
-
-        console.log('');
-        updateSource.push('\n');
-    }
-}
-
-function fixError(audit, fileData, error, solutionLookup) {
-    let message = `\tType: ${error.type}`;
-    console.log(message);
-    updateSource.push(message + '\n');
-    
-    // message = `\tLine: ${error.position.line}`;
-    // console.log(message);
-    // updateSource.push(message + '\n');
-
-    // message = `\tChar: ${error.position.char}`;
-    // console.log(message);
-    // updateSource.push(message + '\n');
-
-    message = `\tMessage: ${error.message}\n`;
-    console.log(message);
-    updateSource.push(message + '\n');
-
-    if (audit) {
-        return fileData;
-    }
-
-    const solutionFunction = solutionLookup[error.type];
-    return solutionFunction != null ? solutionFunction(fileData) : fileData;
-
-    // error = { position, type, message }
-    // TODO: Determine regex to use
-    // Determine what to replace
-    // Replace or log in audit
-    // Perform replace on fileData, store result back into fileData. Also make sure to log in audit
-}
-
-function fixBuildErrors(audit, errors) {
-    const solutionLookup = initSolutionFunctionLookup();
-
-    for (const error of errors) {
-        let message = `File path: ${error.filePath}`;
-        console.log(message);
-        updateSource.push(message + '\n');
-
-        let fileData = readFileData(error.filePath);
-
-        if (!fileData) {
-            message = `Couldn't retrieve file data for path ${error.filePath}. Please verify this path is valid.`;
-            console.log(message);
-            updateSource.push(message + '\n');
-            continue;
-        }
-
-        fileData = fixError(audit, fileData, error, solutionLookup);
-        fse.writeFileSync(error.filePath, fileData);
-
-        console.log('');
-        updateSource.push('\n');
-    }
-}
-
-function initSolutionFunctionLookup() {
-    return {
-        'only-arrow-functions': (fileData) => {
-            const parameterRegex = /(?<=function\s*\()[^)]*/;
-            const targetRegex = /function\s*\([^)]*\)/;
-
-            const parameters = fileData.match(parameterRegex);
-            return replaceInString(fileData, targetRegex, `(${parameters[0]}) =>`);
-        }
-    }
-}
-
-function readFileData(filePath) {
-    if (!fs.statSync(filePath).isDirectory()) {
-        if (!fse.existsSync(filePath)) {
-            return null;
-        }
-
-        return fse.readFileSync(filePath, 'utf8');
-    }
-
-    return null;
-}
-
-function readFileJSON(filePath) {
-    if (!fs.statSync(filePath).isDirectory()) {
-        if (!fse.existsSync(filePath)) {
-            return null;
-        }
-
-        return fse.readJSONSync(filePath);
-    }
-
-    return null;
-}
-
 /**
  * Inserts newString into originalString at location of the indexRegex. Returns null if no regex match is found.
  * @param {string} originalString Original string to modify.
@@ -493,11 +132,7 @@ function readFileJSON(filePath) {
 //     return firstSlice + newString + secondSlice;
 // }
 
-function replaceInString(originalString, regexToReplace, newString) {
-    return originalString.replace(regexToReplace, newString);
-}
-
-function searchFile(filePath) {
+function searchFile(filePath, updateSource, updateCount) {
     if (!fs.statSync(filePath).isDirectory()) {
         if (!fse.existsSync(filePath)) {
             return;

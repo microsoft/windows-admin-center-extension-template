@@ -3,14 +3,13 @@
 var fse = require('fs-extra');
 var minimist = require('minimist');
 var pathExists = require('path-exists');
-var update = require('./update-version');
+var upgrade = require('./upgrade/main');
 
 const argv = minimist(process.argv.slice(2));
 
-if (argv._ == 'updateEleven') {
-	update.update(
-		(argv.audit === undefined || argv.audit === true) && argv.update === undefined,
-		!(argv.internal === undefined || argv.internal === false),
+if (argv._ == 'upgrade') {
+	upgrade.upgrade(
+		(argv.audit === undefined || argv.audit === 'true') && argv.upgrade === undefined,
 		process.cwd()
 	);
 }
