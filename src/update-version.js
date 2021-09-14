@@ -4,6 +4,7 @@ const fse = require('fs-extra');
 const { resolve } = require('path');
 const { readdir, stat } = require('fs').promises;
 const fs = require('fs');
+const path = require('path');
 
 let updateCount = 0;
 let updateSource = [];
@@ -44,26 +45,27 @@ function finalize() {
 }
 
 function copyNewFiles() {
-    let ignoresPath = __dirname.substring(0, __dirname.length - 3) + 'templates\\ignores';
-    let upgradedTemplatePath = __dirname.substring(0, __dirname.length - 3) + 'templates\\windows-admin-center-extension-template';
+    const basePath = __dirname.substring(0, __dirname.length - 3);
+    let ignoresPath = path.join(basePath, 'templates','ignores');
+    let upgradedTemplatePath = path.join(basePath, 'templates','windows-admin-center-extension-template');
 
-    fse.copyFileSync(ignoresPath + '\\git', '.\\.gitignore');
-    fse.copyFileSync(ignoresPath + '\\npm', '.\\.npmignore');
-    fse.copyFileSync(upgradedTemplatePath + '\\tslint.json', '.\\tslint.json');
-    fse.copySync(upgradedTemplatePath + '\\gulpfile.ts', '.\\gulpfile.ts');
-    fse.copyFileSync(upgradedTemplatePath + '\\tsconfig.json', '.\\tsconfig.json');
-    fse.copyFileSync(upgradedTemplatePath + '\\angular.json', '.\\angular.json');
-    fse.copyFileSync(upgradedTemplatePath + '\\tsconfig.inline.json', '.\\tsconfig.inline.json');
-    fse.copyFileSync(upgradedTemplatePath + '\\src\\tsconfig.app.json', '.\\src\\tsconfig.app.json');
-    fse.copyFileSync(upgradedTemplatePath + '\\src\\tsconfig.spec.json', '.\\src\\tsconfig.spec.json');
-    fse.copyFileSync(upgradedTemplatePath + '\\src\\polyfills.ts', '.\\src\\polyfills.ts');
+    fse.copyFileSync(path.join(ignoresPath,'git'), '.gitignore');
+    fse.copyFileSync(path.join(ignoresPath,'npm'), '.npmignore');
+    fse.copyFileSync(path.join(upgradedTemplatePath,'tslint.json'), 'tslint.json');
+    fse.copyFileSync(path.join(upgradedTemplatePath,'gulpfile.ts'), 'gulpfile.ts');
+    fse.copyFileSync(path.join(upgradedTemplatePath,'tsconfig.json'), 'tsconfig.json');
+    fse.copyFileSync(path.join(upgradedTemplatePath,'angular.json'), 'angular.json');
+    fse.copyFileSync(path.join(upgradedTemplatePath,'tsconfig.inline.json'), 'tsconfig.inline.json');
+    fse.copyFileSync(path.join(upgradedTemplatePath,'src','tsconfig.app.json'), path.join('src','tsconfig.app.json'));
+    fse.copyFileSync(path.join(upgradedTemplatePath,'src','tsconfig.spec.json'), path.join('src','tsconfig.spec.json'));
+    fse.copyFileSync(path.join(upgradedTemplatePath,'src','polyfills.ts'), path.join('src','polyfills.ts'));
 
-    if(fse.existsSync('.\\tsconfig-inline.json')) {
-        fs.unlinkSync('.\\tsconfig-inline.json');
+    if(fse.existsSync('tsconfig-inline.json')) {
+        fs.unlinkSync('tsconfig-inline.json');
     }
 
-    if(fse.existsSync('.\\package-lock.json')) {
-        fs.unlinkSync('.\\package-lock.json');
+    if(fse.existsSync('package-lock.json')) {
+        fs.unlinkSync('package-lock.json');
     }
 
     console.log('All new config and json files have been transferred.');

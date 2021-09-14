@@ -2,6 +2,7 @@
 
 var fse = require('fs-extra');
 var minimist = require('minimist');
+var path = require('path');
 var pathExists = require('path-exists');
 var update = require('./update-version');
 
@@ -48,10 +49,11 @@ function createExtension() {
 }
 
 function create(type, company, primary, secondary, version) {
-	const ignoresPath = __dirname.substring(0, __dirname.length - 3) + 'templates\\ignores';
-	const legacyTemplatePath = __dirname.substring(0, __dirname.length - 3) + 'templates\\legacy\\windows-admin-center-extension-template';
-	const templatePath = __dirname.substring(0, __dirname.length - 3) + 'templates\\windows-admin-center-extension-template';
-	const manifestTemplatePath = __dirname.substring(0, __dirname.length - 3) + 'templates\\manifest';
+	const basePath = __dirname.substring(0, __dirname.length - 3);
+	const ignoresPath = path.join(basePath, "templates", "ignores");
+	const legacyTemplatePath = path.join(basePath, 'templates','legacy','windows-admin-center-extension-template');
+	const templatePath = path.join(basePath,'templates','windows-admin-center-extension-template');
+	const manifestTemplatePath = path.join(basePath,'templates','manifest');
 
 	if (pathExists.sync(primary)) {
 		console.error('This tool definition already exists.  No changes have been made.')
@@ -66,15 +68,15 @@ function create(type, company, primary, secondary, version) {
 			fse.copySync(templatePath, productPath);
 		}
 
-		fse.copyFileSync(ignoresPath + '\\git', productPath + '\\.gitignore');
-		fse.copyFileSync(ignoresPath + '\\npm', productPath + '\\.npmignore');
+		fse.copyFileSync(path.join(ignoresPath, 'git'), path.join(productPath, '.gitignore'));
+		fse.copyFileSync(path.join(ignoresPath, 'npm'), path.join(productPath, '.npmignore'));
 
 		if (type === 'tool') {
 			// make tool manifest
-			fse.copyFileSync(manifestTemplatePath + '\\tool-manifest.json', productPath + '\\src\\manifest.json');
+			fse.copyFileSync(path.join(manifestTemplatePath, 'tool-manifest.json'), path.join(productPath, 'src','manifest.json'));
 		} else if (type === 'solution') {
 			// make solution manifest
-			fse.copyFileSync(manifestTemplatePath + '\\solution-manifest.json', productPath + '\\src\\manifest.json');
+			fse.copyFileSync(path.join(manifestTemplatePath, 'solution-manifest.json'), path.join(productPath, 'src','manifest.json'));
 		}
 
 		updateFiles(company, primary, secondary, version);
